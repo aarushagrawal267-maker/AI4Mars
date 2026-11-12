@@ -63,6 +63,10 @@ export default function TerrainSummary({ analysis }: { analysis: Analysis }) {
         ))}
       </div>
       <p className="text-sm leading-relaxed text-ink-2">{s.summary}</p>
+      <p className="text-2xs leading-relaxed text-ink-3">
+        Every pixel receives a class, including regions the AI4Mars training labels never cover — the rover&apos;s own hardware,
+        sky and terrain beyond roughly 30 m. Predictions in those regions are not meaningful.
+      </p>
       <div className="flex flex-wrap items-center gap-2 text-2xs text-ink-3">
         {analysis.is_fixture && <FixtureBadge />}
         <span>Model input {analysis.meta.input_size.join('×')} px</span>·

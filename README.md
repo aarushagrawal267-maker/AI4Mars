@@ -156,9 +156,10 @@ An optional `docker compose up` route is described in `docker-compose.yml` (CPU 
 6. **Plan a route** — *Navigation Simulator.* Click a start and a destination, paint restricted cells, change costs.
 
 **How long does training take?** Measured in this repository's development environment (4 CPU threads, no GPU),
-at 192 px with batch size 8 on 3,570 training images: U-Net (base 16, 1.8 M parameters) took about 3.5–4.5 minutes
-per epoch and DeepLabV3-MobileNetV3 (11 M parameters) a similar order. Your laptop will differ — use the estimate
-button, which measures your machine. A CUDA GPU is typically one to two orders of magnitude faster.
+at 192 px with batch size 8 on 3,570 training images: U-Net (base 16, 1.8 M parameters) took 3.5–5.5 minutes per
+epoch (40 min for 10 epochs) and DeepLabV3-MobileNetV3 (11 M parameters) about 3 minutes per epoch (30 min). Each
+test-set evaluation of 322 images took 2–4 minutes. Your laptop will differ — use the estimate button, which
+measures your machine. A CUDA GPU is typically one to two orders of magnitude faster.
 
 ---
 
@@ -180,7 +181,53 @@ its output is never presented as an AI prediction. Details: [docs/testing.md](do
 ## Results
 
 <!-- RESULTS:START -->
-*Results are being generated.*
+Baseline experiment run in this repository's development environment (4 CPU threads, no GPU) with
+[`scripts/run_baseline_experiments.py`](scripts/run_baseline_experiments.py). Both models used **identical**
+settings — 3,570 training / 402 validation images (Curiosity NavCam subset, seed 42), 192 × 192 px, batch 8,
+10 epochs, AdamW lr 1e-3 with cosine schedule, cross-entropy (ignore 255) + 0.5 × Dice, same augmentation and seed —
+only the architecture differs. The best checkpoint was selected on validation mIoU; the official expert test set
+(322 images) was used only for these final measurements, at native 1024 × 1024 label resolution. All values below
+were produced by the application and are reproducible with the scripts above; percentages are ×100.
+
+<!-- TABLE:START -->
+| Model | Split · labels | Images | Pixel acc. | mIoU | Mean Dice | IoU Soil | IoU Bedrock | IoU Sand | IoU Big rock | Forward pass (median) | Params | Checkpoint |
+|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| DeepLabV3 | test · min1 | 322 | 87.2 | **60.1** | 69.6 | 82.6 | 77.0 | 71.0 | 9.8 | 31.7 ms (cpu) | 11.02 M | 44.3 MB |
+| U-Net | test · min1 | 322 | 84.4 | **53.9** | 62.6 | 77.9 | 74.1 | 63.4 | 0.0 | 23.2 ms (cpu) | 1.81 M | 7.3 MB |
+| DeepLabV3 | test · min3 | 322 | 92.7 | **73.2** | 82.1 | 88.7 | 90.4 | 79.8 | 33.8 | 34.0 ms (cpu) | 11.02 M | 44.3 MB |
+| U-Net | test · min3 | 322 | 90.0 | **61.0** | 67.2 | 85.0 | 84.6 | 74.3 | 0.0 | 21.7 ms (cpu) | 1.81 M | 7.3 MB |
+| DeepLabV3 | validation | 402 | 94.9 | **73.9** | 81.5 | 91.5 | 92.6 | 83.9 | 27.5 | 29.8 ms (cpu) | 11.02 M | 44.3 MB |
+| U-Net | validation | 402 | 91.7 | **62.1** | 67.9 | 86.5 | 88.3 | 73.9 | 0.0 | 23.0 ms (cpu) | 1.81 M | 7.3 MB |
+
+| Experiment | Architecture | Epochs run (best) | Best val mIoU | Train / val images | Resolution | Wall time |
+|---|---|---|---:|---|---|---:|
+| DeepLabV3 (MobileNetV3-L, COCO init) - MSL NavCam subset, 192 px | DeepLabV3 {"backbone": "mobilenet_v3_large", "pretrained": "coco"} | 10/10 (8) | 74.0 | 3570 / 402 | 192 px | 30 min (cpu) |
+| U-Net (base 16) - MSL NavCam subset, 192 px | U-Net {"base_channels": 16, "depth": 4, "bilinear": true, "dropout": 0.0} | 10/10 (10) | 62.2 | 3570 / 402 | 192 px | 40 min (cpu) |
+<!-- TABLE:END -->
+
+**What these numbers say — and don't**
+
+- **DeepLabV3 beat U-Net on every split and every class** in this setting: test mIoU 73.2 vs 61.0 on `min3`
+  labels and 60.1 vs 53.9 on `min1`. Part of that gap is the COCO-pretrained backbone (U-Net was trained from
+  scratch) and DeepLabV3's 6× larger parameter count; the comparison is between the two *configurations*, not a
+  claim about the architectures in general.
+- **Big rock is the weak class.** U-Net never predicted it correctly (IoU 0.0); DeepLabV3 reached 33.8 (`min3`).
+  Big rock is ~1.2 % of labelled training pixels and 0.07 % of `min3` test pixels, so these values rest on very few
+  pixels. Class weighting (available in the training page) is the obvious next experiment.
+- **`min1` scores are lower than `min3`.** `min1` labels include pixels where only one of three experts was
+  confident; they are larger and contain harder, more ambiguous regions. Report both.
+- **Validation and test agree.** Validation mIoU re-measured at native resolution (62.1 / 73.9) matches the value
+  tracked during training (62.2 / 74.0), and test `min3` is close to validation — no sign of checkpoint-selection
+  overfitting at this scale. DeepLabV3's validation mIoU fluctuated between epochs (64–74 %), so a single run
+  carries noticeable variance; several seeds would be needed for a firm conclusion.
+- **Speed** is the median single-image forward pass at 192 px on this CPU; U-Net is faster (21.7 vs 34.0 ms) and
+  6× smaller on disk (7.3 vs 44.3 MB).
+- **Limits:** one seed, a 22 % subset of the available training pairs, low resolution and 10 CPU epochs. With a GPU,
+  the full 16,064 training pairs and higher resolution, both models should improve. 31 of the 322 test images share
+  a rover position with the training subset (reported by the Dataset Explorer).
+- **Known failure mode:** pixels the labels never cover (rover hardware, sky, terrain beyond ~30 m) still receive a
+  class at inference — e.g. the rover body is often predicted as bedrock. Evaluation ignores those pixels; whole-image
+  terrain percentages do not.
 <!-- RESULTS:END -->
 
 ---

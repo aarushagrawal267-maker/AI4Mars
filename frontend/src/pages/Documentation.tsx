@@ -190,7 +190,7 @@ export default function Documentation() {
           <Section id="limitations" title="Known limitations">
             <ul>
               <li><b>Class imbalance:</b> big rock is roughly 1% of labelled training pixels and under 0.2% of test pixels, so its scores are noisy and typically low.</li>
-              <li><b>Label quality and bias:</b> training labels are crowdsourced and sparse (~40% of pixels unlabelled); terrain beyond ~30 m and the rover body are masked out. Models never learn those regions.</li>
+              <li><b>Label quality and bias:</b> training labels are crowdsourced and sparse (~40% of pixels unlabelled); terrain beyond ~30 m and the rover body are masked out. Models never learn those regions, yet inference still assigns them a class — in practice the trained models often label the rover&apos;s own hardware as bedrock and distant ridges as big rock. Those pixels should be ignored, and they also inflate the composition percentages of whole-image analyses.</li>
               <li><b>Domain:</b> trained on grayscale Curiosity NavCam images. Colour images, other rovers, other cameras or other terrain types are out of distribution; colour uploads are converted to grayscale.</li>
               <li><b>Compute:</b> CPU-only machines can train only small subsets at reduced resolution for a few epochs. Results from such runs are genuine but well below what full-dataset GPU training achieves.</li>
               <li><b>Single seed:</b> the baseline comparison uses one seed; differences of a few points may not be significant.</li>
