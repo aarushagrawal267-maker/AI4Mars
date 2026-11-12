@@ -1,0 +1,69 @@
+"""FastAPI application factory.
+
+Run locally with:  uvicorn backend.app.main:app --port 8000
+Interactive API documentation is served at /docs (Swagger UI) and /redoc.
+"""
+from __future__ import annotations
+
+import logging
+from contextlib import asynccontextmanager
+
+from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+
+from .api import dataset, evaluate, experiments, navigation, predict, system, training
+from .api.deps import build_context
+from .core.config import APP_NAME, APP_VERSION, Settings, get_settings
+
+log = logging.getLogger("mti")
+
+
+def create_app(settings: Settings | None = None) -> FastAPI:
+    settings = settings or get_settings()
+    logging.basicConfig(level=getattr(logging, settings.log_level.upper(), logging.INFO),
+                        format="%(asctime)s %(levelname)s %(name)s: %(message)s")
+
+    @asynccontextmanager
+    async def lifespan(app: FastAPI):
+        yield
+        app.state.ctx.training.shutdown()
+        app.state.ctx.db.dispose()
+
+    app = FastAPI(
+        title=APP_NAME, version=APP_VERSION, lifespan=lifespan,
+        description="Local research API for Mars terrain segmentation with AI4Mars: dataset management, "
+                    "U-Net / DeepLabV3 training, evaluation, inference and an experimental route-planning "
+                    "simulator. Independent student research project; not a NASA system.",
+    )
+    app.state.ctx = build_context(settings)
+    app.add_middleware(CORSMiddleware, allow_origins=[o.strip() for o in settings.cors_origins.split(",") if o.strip()],
+                       allow_methods=["*"], allow_headers=["*"])
+
+    @app.exception_handler(KeyError)
+    async def _not_found(_: Request, exc: KeyError) -> JSONResponse:
+        return JSONResponse(status_code=404, content={"detail": f"Not found: {exc.args[0] if exc.args else ''}"})
+
+    @app.exception_handler(LookupError)
+    async def _lookup(_: Request, exc: LookupError) -> JSONResponse:
+        return JSONResponse(status_code=404, content={"detail": str(exc)})
+
+    @app.exception_handler(ValueError)
+    async def _bad_value(_: Request, exc: ValueError) -> JSONResponse:
+        return JSONResponse(status_code=422, content={"detail": str(exc)})
+
+    @app.exception_handler(RuntimeError)
+    async def _conflict(_: Request, exc: RuntimeError) -> JSONResponse:
+        return JSONResponse(status_code=409, content={"detail": str(exc)})
+
+    @app.exception_handler(Exception)
+    async def _unhandled(_: Request, exc: Exception) -> JSONResponse:
+        log.exception("Unhandled error")
+        return JSONResponse(status_code=500, content={"detail": "Internal server error. See the backend log."})
+
+    for module in (system, dataset, training, experiments, predict, evaluate, navigation):
+        app.include_router(module.router, prefix="/api")
+    return app
+
+
+app = create_app()
