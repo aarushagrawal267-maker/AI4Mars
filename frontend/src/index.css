@@ -1,0 +1,209 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ------------------------------------------------------------------ tokens
+   Colours are RGB channel triplets so Tailwind can apply opacity (bg-accent/20). */
+:root,
+:root[data-theme='dark'] {
+  --bg: 9 10 12;
+  --surface: 16 18 21;
+  --raised: 22 25 29;
+  --sunken: 12 13 16;
+  --line: 34 38 44;
+  --line-strong: 50 55 63;
+  --ink: 233 230 225;
+  --ink-2: 160 165 172;
+  --ink-3: 110 116 124;
+  --accent: 232 116 59;
+  --accent-ink: 20 10 5;
+  --good: 70 190 140;
+  --warn: 229 176 69;
+  --bad: 232 92 84;
+  --info: 98 160 222;
+  --hi: 255 255 255;
+  --grid: 255 255 255;
+  --chart-grid: rgba(255, 255, 255, 0.06);
+  --chart-axis: rgb(110 116 124);
+  color-scheme: dark;
+}
+
+:root[data-theme='light'] {
+  --bg: 242 240 236;
+  --surface: 255 255 255;
+  --raised: 248 246 243;
+  --sunken: 235 232 227;
+  --line: 222 218 211;
+  --line-strong: 200 195 187;
+  --ink: 28 27 25;
+  --ink-2: 84 82 78;
+  --ink-3: 125 121 115;
+  --accent: 196 82 30;
+  --accent-ink: 255 255 255;
+  --good: 22 130 86;
+  --warn: 164 112 10;
+  --bad: 192 52 44;
+  --info: 36 104 176;
+  --hi: 255 255 255;
+  --grid: 0 0 0;
+  --chart-grid: rgba(0, 0, 0, 0.07);
+  --chart-axis: rgb(125 121 115);
+  color-scheme: light;
+}
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+  body {
+    @apply bg-bg font-sans text-ink antialiased;
+    font-feature-settings: 'ss01', 'cv11';
+  }
+  ::selection {
+    background: rgb(var(--accent) / 0.35);
+  }
+  h1,
+  h2,
+  h3 {
+    @apply font-display tracking-tight;
+  }
+  :focus-visible {
+    outline: 2px solid rgb(var(--accent));
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  /* thin scrollbars */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(var(--line-strong)) transparent;
+  }
+  input[type='range'] {
+    accent-color: rgb(var(--accent));
+  }
+}
+
+@layer components {
+  /* Instrument panel: hairline border + corner registration marks. */
+  .panel {
+    @apply relative rounded-xl border border-line bg-surface shadow-panel;
+  }
+  .panel-ticks::before,
+  .panel-ticks::after {
+    content: '';
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    pointer-events: none;
+    border-color: rgb(var(--accent) / 0.55);
+  }
+  .panel-ticks::before {
+    top: -1px;
+    left: -1px;
+    border-top-width: 1px;
+    border-left-width: 1px;
+    border-top-left-radius: 12px;
+  }
+  .panel-ticks::after {
+    bottom: -1px;
+    right: -1px;
+    border-bottom-width: 1px;
+    border-right-width: 1px;
+    border-bottom-right-radius: 12px;
+  }
+  .eyebrow {
+    @apply font-mono text-2xs uppercase tracking-[0.14em] text-ink-3;
+  }
+  .num {
+    @apply font-mono tabular-nums;
+  }
+  .field {
+    @apply w-full rounded-lg border border-line bg-sunken px-3 py-2 text-sm text-ink placeholder:text-ink-3
+      transition-colors hover:border-line-strong focus:border-accent/70 focus:outline-none disabled:opacity-50;
+  }
+  .btn {
+    @apply inline-flex select-none items-center justify-center gap-2 whitespace-nowrap rounded-lg px-3.5 py-2 text-sm font-medium
+      transition-all duration-150 disabled:cursor-not-allowed disabled:opacity-45;
+  }
+  .btn-primary {
+    @apply btn bg-accent text-accent-ink hover:brightness-110 active:brightness-95;
+  }
+  .btn-secondary {
+    @apply btn border border-line bg-raised text-ink hover:border-line-strong hover:bg-sunken;
+  }
+  .btn-ghost {
+    @apply btn text-ink-2 hover:bg-raised hover:text-ink;
+  }
+  .btn-danger {
+    @apply btn border border-bad/40 bg-bad/10 text-bad hover:bg-bad/20;
+  }
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-md border border-line bg-raised px-2 py-0.5 text-2xs font-medium text-ink-2;
+  }
+  .table-clean {
+    @apply w-full border-collapse text-sm;
+  }
+  .table-clean th {
+    @apply border-b border-line px-3 py-2 text-left font-mono text-2xs font-medium uppercase tracking-wider text-ink-3;
+  }
+  .table-clean td {
+    @apply border-b border-line/60 px-3 py-2 align-middle;
+  }
+  .table-clean tbody tr {
+    @apply transition-colors hover:bg-raised/60;
+  }
+}
+
+@layer utilities {
+  .bg-grid {
+    background-image: linear-gradient(rgb(var(--grid) / 0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(var(--grid) / 0.035) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+  .bg-checker {
+    background-color: rgb(var(--sunken));
+    background-image: linear-gradient(45deg, rgb(var(--grid) / 0.04) 25%, transparent 25%),
+      linear-gradient(-45deg, rgb(var(--grid) / 0.04) 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, rgb(var(--grid) / 0.04) 75%),
+      linear-gradient(-45deg, transparent 75%, rgb(var(--grid) / 0.04) 75%);
+    background-size: 16px 16px;
+    background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+  }
+  .pixelated {
+    image-rendering: pixelated;
+  }
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Recharts: keep axes and grid recessive and theme-aware. */
+.recharts-cartesian-grid line {
+  stroke: var(--chart-grid);
+}
+.recharts-cartesian-axis-tick text,
+.recharts-polar-angle-axis-tick text {
+  fill: var(--chart-axis);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+}
+.recharts-cartesian-axis-line,
+.recharts-cartesian-axis-tick-line {
+  stroke: rgb(var(--line-strong));
+}
+.recharts-tooltip-cursor {
+  fill: rgb(var(--ink) / 0.05);
+}
+.recharts-default-legend {
+  font-size: 12px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

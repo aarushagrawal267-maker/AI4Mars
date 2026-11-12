@@ -1,0 +1,16 @@
+# Keep the Docker build context small: local environments, data and run outputs are not copied
+# into images (data/, checkpoints/ and experiments/ are mounted as volumes by docker-compose.yml).
+.git
+.venv
+**/__pycache__
+**/*.pyc
+.pytest_cache
+.run
+.env
+data
+checkpoints
+experiments
+frontend/node_modules
+frontend/dist
+frontend/test-results
+frontend/playwright-report
