@@ -139,7 +139,7 @@
     @apply btn border border-bad/40 bg-bad/10 text-bad hover:bg-bad/20;
   }
   .chip {
-    @apply inline-flex items-center gap-1.5 rounded-md border border-line bg-raised px-2 py-0.5 text-2xs font-medium text-ink-2;
+    @apply inline-flex items-center gap-1.5 whitespace-nowrap rounded-md border border-line bg-raised px-2 py-0.5 text-2xs font-medium text-ink-2;
   }
   .table-clean {
     @apply w-full border-collapse text-sm;

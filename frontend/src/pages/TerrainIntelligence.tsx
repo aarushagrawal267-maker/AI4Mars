@@ -8,7 +8,7 @@ import { Callout, ClassSwatch, EmptyState, ErrorBanner, FixtureBadge, Loading, P
 import { useApp } from '../context/AppContext';
 import { useRemote } from '../hooks/usePolling';
 import { api } from '../services/api';
-import { archLabel, CLASS_KEYS, CLASS_LABEL, fixed, int, pct, ratio, when } from '../utils/format';
+import { archLabel, CLASS_KEYS, CLASS_LABEL, compact, fixed, int, pct, ratio, when } from '../utils/format';
 
 export default function TerrainIntelligence() {
   const { connection, colorOf } = useApp();
@@ -48,7 +48,7 @@ export default function TerrainIntelligence() {
                   {a.is_fixture && <FixtureBadge />}
                   <Link to={`/navigation?id=${a.id}`} className="btn-secondary ml-auto text-xs"><Map className="h-3.5 w-3.5" /> Plan a route on this terrain</Link>
                 </div>
-                <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 xl:grid-cols-7">
+                <div className="grid grid-cols-2 gap-3 md:grid-cols-4 2xl:grid-cols-7">
                   <div className="panel col-span-2 px-4 py-3.5">
                     <div className="eyebrow">dominant terrain</div>
                     <div className="mt-1.5 flex items-center gap-2 text-2xl font-semibold" style={{ color: s.dominant_class ? colorOf(s.dominant_class) : undefined }}>
@@ -58,7 +58,7 @@ export default function TerrainIntelligence() {
                     <div className="num mt-1 text-xs text-ink-3">{s.dominant_class ? pct(s.class_percent[s.dominant_class], 2) : ''} of classified pixels</div>
                   </div>
                   {CLASS_KEYS.map((k) => <Stat key={k} label={CLASS_LABEL[k]} value={pct(s.class_percent[k], 1)} sub={`${int(s.class_pixels[k])} px`} />)}
-                  <Stat label="Valid pixels" value={int(s.valid_pixels)} sub={`${s.width}×${s.height}`} />
+                  <Stat label="Valid pixels" value={compact(s.valid_pixels)} sub={`${int(s.valid_pixels)} · ${s.width}×${s.height}`} />
                 </div>
 
                 <Panel title="Terrain map" icon={Mountain} ticks><SegmentationViewer analysis={a} defaultMode="mask" maxHeight={520} /></Panel>

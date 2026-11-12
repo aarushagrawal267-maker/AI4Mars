@@ -81,7 +81,7 @@ export function Stat({ label, value, sub, tone = 'default', icon: Icon, classNam
         <span className="eyebrow">{label}</span>
         {Icon && <Icon className="h-3.5 w-3.5 text-ink-3" strokeWidth={1.75} />}
       </div>
-      <div className={cx('num mt-1.5 text-2xl font-medium leading-none', toneText[tone])}>{value}</div>
+      <div className={cx('num mt-1.5 truncate text-2xl font-medium leading-none', toneText[tone])}>{value}</div>
       {sub && <div className="mt-1.5 truncate text-xs text-ink-3">{sub}</div>}
     </div>
   );
@@ -93,7 +93,7 @@ export function KV({ items, className }: { items: [ReactNode, ReactNode][]; clas
       {items.map(([k, v], i) => (
         <div key={i} className="contents">
           <dt className="text-ink-3">{k}</dt>
-          <dd className="num min-w-0 truncate text-right text-ink">{v}</dd>
+          <dd className="num min-w-0 truncate text-right text-ink" title={typeof v === 'string' ? v : undefined}>{v}</dd>
         </div>
       ))}
     </dl>
