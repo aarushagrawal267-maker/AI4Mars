@@ -49,7 +49,7 @@ export const systemInfo = {
 };
 export const idleTraining = { method: 'GET', path: '/training/status', body: { active: false, experiment_id: null, state: 'idle' } };
 
-export const pc = (soil: number, bedrock: number, sand: number, big_rock: number) => ({ soil, bedrock, sand, big_rock });
+export const pc = (soil: number | null, bedrock: number | null, sand: number | null, big_rock: number | null) => ({ soil, bedrock, sand, big_rock });
 
 export const model = {
   id: 'unet-1', name: 'U-Net test run', arch: 'unet', status: 'completed', is_fixture: false, created_at: '2026-01-01T00:00:00',

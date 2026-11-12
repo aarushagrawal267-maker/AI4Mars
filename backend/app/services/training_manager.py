@@ -134,7 +134,9 @@ class TrainingManager:
                    "PYTHONUNBUFFERED": "1"}
             stdout = open(run_dir / "process.log", "ab")
             self._proc = subprocess.Popen([sys.executable, "-m", "ml.training.run", "--run-dir", str(run_dir)],
-                                          cwd=str(REPO_ROOT), env=env, stdout=stdout, stderr=subprocess.STDOUT)
+                                          cwd=str(REPO_ROOT), env=env, stdout=stdout, stderr=subprocess.STDOUT,
+                                          # never flash a console window on Windows
+                                          creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
             stdout.close()
             self._active_id = exp_id
             self._watcher = threading.Thread(target=self._watch, args=(exp_id, self._proc), daemon=True,
