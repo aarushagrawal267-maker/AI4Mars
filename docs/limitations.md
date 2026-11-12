@@ -17,6 +17,10 @@ known limitations of the data, the models, the evaluation and the software.
   pixels are unlabelled. The model is never supervised on the hardest regions.
 - **No sky / rover / far-range class.** Labels mask terrain beyond about 30 m and the rover, and
   there is no class for sky. At inference every pixel still gets one of the four terrain classes.
+  Observed with the baseline models: the rover's own hardware is often predicted as bedrock and
+  distant ridges as big rock. Those pixels are meaningless and they inflate whole-image composition
+  percentages. (Evaluation is unaffected, because those pixels are unlabelled in the ground truth.)
+  Applying the dataset's rover masks (`images/mxy`) at inference is a possible improvement.
 - **Class imbalance.** Big rock is about 1 % of labelled training pixels and well under 1 % of test
   pixels, so its scores are noisy and it is the class most likely to be missed.
 - **Test-set overlap by position.** 31 of the 322 test images were taken at a rover position that

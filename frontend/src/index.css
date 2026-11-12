@@ -148,7 +148,7 @@
     @apply border-b border-line px-3 py-2 text-left font-mono text-2xs font-medium uppercase tracking-wider text-ink-3;
   }
   .table-clean td {
-    @apply border-b border-line/60 px-3 py-2 align-middle;
+    @apply whitespace-nowrap border-b border-line/60 px-3 py-2 align-middle;
   }
   .table-clean tbody tr {
     @apply transition-colors hover:bg-raised/60;

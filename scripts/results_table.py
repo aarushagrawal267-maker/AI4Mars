@@ -1,7 +1,7 @@
 """Print a Markdown results table built from the evaluations stored by the running backend.
 
     python scripts/results_table.py                 # all non-fixture evaluations
-    python scripts/results_table.py --update-readme # also replace the Results block in README.md
+    python scripts/results_table.py --update-readme # also replace the table between TABLE markers in README.md
 
 Numbers are read from the API (i.e. the SQLite database); nothing is typed by hand.
 """
@@ -72,8 +72,8 @@ def main() -> None:
     if args.update_readme:
         readme = ROOT / "README.md"
         text = readme.read_text(encoding="utf-8")
-        new = re.sub(r"<!-- RESULTS:START -->.*?<!-- RESULTS:END -->",
-                     lambda _: f"<!-- RESULTS:START -->\n{table}\n<!-- RESULTS:END -->", text, flags=re.S)
+        new = re.sub(r"<!-- TABLE:START -->.*?<!-- TABLE:END -->",
+                     lambda _: f"<!-- TABLE:START -->\n{table}\n<!-- TABLE:END -->", text, flags=re.S)
         readme.write_text(new, encoding="utf-8")
 
 
