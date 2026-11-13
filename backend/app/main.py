@@ -66,4 +66,18 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     return app
 
 
-app = create_app()
+_app: FastAPI | None = None
+
+
+def __getattr__(name: str):
+    """Create the ASGI app lazily on first access of ``backend.app.main.app`` (what uvicorn does).
+
+    Importing this module (e.g. from tests that call ``create_app`` with their own settings) therefore never
+    opens the real data directory or touches the experiment database.
+    """
+    global _app
+    if name == "app":
+        if _app is None:
+            _app = create_app()
+        return _app
+    raise AttributeError(name)
