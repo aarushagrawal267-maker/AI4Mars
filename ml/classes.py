@@ -18,12 +18,14 @@ CLASS_KEYS: list[str] = ["soil", "bedrock", "sand", "big_rock"]
 CLASS_LABELS: list[str] = ["Soil", "Bedrock", "Sand", "Big rock"]
 
 # Default display palette (hex). Soil: earthy brown, bedrock: blue,
-# sand: orange/yellow, big rock: purple.
+# sand: orange/yellow, big rock: purple. Tuned for separation; blue vs purple is
+# inherently close for deuteranopes, so the UI always pairs colour with class names
+# and Settings offers an Okabe-Ito colour-blind-safe preset.
 DEFAULT_COLORS: dict[str, str] = {
-    "soil": "#9C6B3F",
-    "bedrock": "#3B82F6",
-    "sand": "#F5B041",
-    "big_rock": "#A855F7",
+    "soil": "#B0682C",
+    "bedrock": "#35A3E8",
+    "sand": "#E6AE35",
+    "big_rock": "#B44BD8",
 }
 # Colour used for unlabelled (NULL) pixels in ground-truth visualisations.
 UNLABELED_COLOR = "#1F2328"

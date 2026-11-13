@@ -1,0 +1,44 @@
+# Optional Docker route (CPU only). The recommended route is setup.ps1 / setup.sh + start scripts.
+#
+#   docker compose up --build
+#   web app:  http://localhost:5173      API docs: http://localhost:8000/docs
+#
+# Dataset, preprocessing cache, database, checkpoints and experiment files live in the host folders
+# ./data, ./checkpoints and ./experiments, so they survive container rebuilds and are shared with a
+# non-Docker installation. Ports are published on 127.0.0.1 only.
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: docker/backend.Dockerfile
+    environment:
+      MTI_CORS_ORIGINS: "http://localhost:5173,http://127.0.0.1:5173"
+      MTI_ENABLE_TEST_FIXTURE: "false"
+      MTI_LOG_LEVEL: "INFO"
+    volumes:
+      - ./data:/app/data
+      - ./checkpoints:/app/checkpoints
+      - ./experiments:/app/experiments
+      # Pretrained DeepLabV3 weights downloaded by torchvision are cached here between runs.
+      - torch-cache:/root/.cache/torch
+    ports:
+      - "127.0.0.1:8000:8000"
+    # PyTorch DataLoader workers use shared memory; the Docker default (64 MB) is small.
+    shm_size: "1gb"
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/frontend.Dockerfile
+    environment:
+      VITE_API_PROXY_TARGET: "http://backend:8000"
+    ports:
+      - "127.0.0.1:5173:5173"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  torch-cache:
