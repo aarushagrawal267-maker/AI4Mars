@@ -33,8 +33,20 @@ function describe(detail: unknown): string {
   return 'Request failed';
 }
 
+export const ADMIN_TOKEN_KEY = 'mti.adminToken';
+
+function adminToken(): string {
+  try {
+    return window.localStorage.getItem(ADMIN_TOKEN_KEY) ?? '';
+  } catch {
+    return '';
+  }
+}
+
 async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   let res: Response;
+  const token = adminToken();
+  if (token) init = { ...init, headers: { ...(init.headers as Record<string, string> | undefined), 'X-Admin-Token': token } };
   try {
     res = await fetch(`${API_BASE}/api${path}`, init);
   } catch {

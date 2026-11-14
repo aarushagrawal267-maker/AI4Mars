@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { Callout, ClassSwatch, ErrorBanner, KV, Loading, PageHeader, Panel, Segmented, StatusBadge } from '../components/ui';
 import { useApp } from '../context/AppContext';
 import { useRemote } from '../hooks/usePolling';
-import { api } from '../services/api';
+import { ADMIN_TOKEN_KEY, api } from '../services/api';
 import type { PerClass } from '../types/api';
 import { CLASS_KEYS, CLASS_LABEL, CVD_COLORS, DEFAULT_COLORS } from '../utils/format';
 
@@ -78,6 +78,7 @@ export default function Settings() {
         <Panel title="Theme" icon={theme === 'dark' ? Moon : Sun}>
           <Segmented value={theme} onChange={setTheme} options={[{ value: 'dark', label: 'Dark' }, { value: 'light', label: 'Light' }]} />
           <p className="mt-3 text-xs text-ink-3">Stored in this browser only.</p>
+          {s?.public_mode && <AdminToken />}
         </Panel>
       </div>
 
@@ -106,6 +107,27 @@ export default function Settings() {
         {error && <ErrorBanner error={error} className="mt-3" />}
         <p className="mt-3 flex items-start gap-2 text-2xs text-ink-3"><Info className="mt-0.5 h-3 w-3 shrink-0" /> Colours change only how masks, overlays and charts are drawn. Class ids (0 soil, 1 bedrock, 2 sand, 3 big rock) and every stored prediction stay exactly the same. Blue and purple are close for some colour-vision deficiencies, so class names always accompany colours; the preset uses the Okabe–Ito palette.</p>
       </Panel>
+    </div>
+  );
+}
+
+function AdminToken() {
+  const [value, setValue] = useState(() => {
+    try { return window.localStorage.getItem(ADMIN_TOKEN_KEY) ?? ''; } catch { return ''; }
+  });
+  const [saved, setSaved] = useState(false);
+  return (
+    <div className="mt-5 border-t border-line pt-4">
+      <label className="mb-1.5 block text-xs font-medium text-ink-2" htmlFor="admin-token">Admin token (public demo)</label>
+      <div className="flex gap-2">
+        <input id="admin-token" type="password" className="field" value={value} placeholder="unlocks training, evaluation and deletion"
+          onChange={(e) => { setValue(e.target.value); setSaved(false); }} />
+        <button className="btn-secondary text-xs" onClick={() => {
+          try { value ? window.localStorage.setItem(ADMIN_TOKEN_KEY, value) : window.localStorage.removeItem(ADMIN_TOKEN_KEY); } catch { /* ignore */ }
+          setSaved(true);
+        }}>{saved ? 'Saved' : 'Save'}</button>
+      </div>
+      <p className="mt-1.5 text-2xs text-ink-3">Stored only in this browser and sent with each request. The server checks it against MTI_ADMIN_TOKEN.</p>
     </div>
   );
 }

@@ -31,3 +31,7 @@ experiments/*
 *.log
 .DS_Store
 Thumbs.db
+
+# Deployment staging and secrets
+deploy/stage/
+deploy/admin_token.txt

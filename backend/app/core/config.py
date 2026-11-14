@@ -26,6 +26,14 @@ class Settings(BaseSettings):
     # Registers a clearly labelled, untrained fixture model for automated UI tests only.
     enable_test_fixture: bool = False
     log_level: str = "INFO"
+    # Public deployment: when true, actions that change state or run heavy jobs (training, dataset
+    # download, evaluation, deletes, settings) require the X-Admin-Token header to equal admin_token.
+    public_mode: bool = False
+    admin_token: str = ""
+    # Keep at most this many stored analyses in public mode (oldest are removed).
+    public_max_analyses: int = 200
+    # Serve the built frontend (frontend/dist) from the API server, for single-container hosting.
+    frontend_dist: Path | None = None
 
     @property
     def raw_dir(self) -> Path:

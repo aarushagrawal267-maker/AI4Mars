@@ -67,7 +67,19 @@ class InferenceService:
             s.add(Analysis(id=analysis_id, experiment_id=info["id"], model_name=info["name"], arch=info["arch"],
                            source=source, filename=filename[:300], sample_id=sample_id,
                            is_fixture=info["is_fixture"], stats=stats, meta=run_meta))
+        if self.settings.public_mode:
+            self._prune(self.settings.public_max_analyses)
         return self.get(analysis_id)
+
+    def _prune(self, keep: int) -> None:
+        """Public mode: bound disk use by removing the oldest analyses beyond ``keep``."""
+        with self.db.session() as s:
+            old = s.query(Analysis).order_by(Analysis.created_at.desc()).offset(keep).all()
+            ids = [a.id for a in old]
+            for a in old:
+                s.delete(a)
+        for i in ids:
+            shutil.rmtree(self._dir(i), ignore_errors=True)
 
     # ---------------------------------------------------------------- queries
     @staticmethod
