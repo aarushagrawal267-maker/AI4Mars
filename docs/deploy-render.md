@@ -57,4 +57,4 @@ browser. The bundle contains no training images, so train locally and commit a n
 - Every push to `main` redeploys automatically.
 - Optional: `MTI_DEMO_BUNDLE_URL` (+ `MTI_DEMO_BUNDLE_SHA256`) lets an image without `deploy/bundle/` download a bundle
   zip at start-up (`python scripts/deploy_space.py --bundle` creates one).
-- Free alternative with 16 GB RAM: Hugging Face Spaces, `scripts/deploy_hf_space.py`.
+- Alternative: a Hugging Face Docker Space (16 GB RAM) with `scripts/deploy_hf_space.py`; Docker Spaces require a Hugging Face PRO subscription. Static Spaces are free: `scripts/deploy_hf_static.py` publishes the browser edition.
