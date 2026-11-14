@@ -1,0 +1,11 @@
+# Streamlit Community Cloud dependencies for streamlit_app/streamlit_app.py.
+# The CPU build of PyTorch keeps the install small (the default Linux wheel pulls in CUDA libraries).
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch>=2.3
+torchvision>=0.18
+streamlit>=1.40
+numpy>=1.26
+opencv-python-headless>=4.9
+pillow>=10.3
+altair>=5
+pandas>=2
