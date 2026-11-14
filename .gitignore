@@ -40,3 +40,6 @@ deploy/mti-demo-bundle.sha256
 frontend/public-demo/
 frontend/dist-demo/
 deploy/hf-space/
+
+# The committed demo bundle for hosted deployments (overrides the *.pt / *.sqlite3 rules above)
+!deploy/bundle/**

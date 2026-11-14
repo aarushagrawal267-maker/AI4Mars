@@ -25,11 +25,11 @@ ALLOWED_TOP = {"data", "checkpoints", "experiments"}
 
 def main() -> int:
     url = os.environ.get("MTI_DEMO_BUNDLE_URL", "").strip()
-    if not url:
-        print("[bundle] MTI_DEMO_BUNDLE_URL not set; starting without a demo bundle")
-        return 0
     if any((ROOT / "checkpoints").glob("*/best.pt")):
-        print("[bundle] checkpoints already present; skipping download")
+        print("[bundle] trained models present in the image; no download needed")
+        return 0
+    if not url:
+        print("[bundle] no trained models in the image and MTI_DEMO_BUNDLE_URL not set; starting without models")
         return 0
     print(f"[bundle] downloading {url}")
     with tempfile.NamedTemporaryFile(suffix=".zip", delete=False) as tmp:

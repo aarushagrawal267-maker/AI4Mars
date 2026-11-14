@@ -18,10 +18,14 @@ COPY ml ./ml
 COPY scripts ./scripts
 COPY --from=web /web/dist ./frontend_dist
 RUN mkdir -p data/raw/imports data/processed data/analyses checkpoints experiments
+# Trained models, results database and the AI4Mars test split, committed under deploy/bundle/.
+COPY deploy/bundle/data ./data
+COPY deploy/bundle/checkpoints ./checkpoints
+COPY deploy/bundle/experiments ./experiments
 # Run as an unprivileged user (uid 1000, which Hugging Face Spaces also require); it owns the writable folders.
 RUN useradd -m -u 1000 user && chown -R user /app
 USER user
 ENV MTI_FRONTEND_DIST=/app/frontend_dist PORT=10000
 EXPOSE 10000
-# Fetch the trained models + results bundle (if MTI_DEMO_BUNDLE_URL is set), then start the server.
+# The bundle is already in the image; MTI_DEMO_BUNDLE_URL (optional) is only used when no checkpoints exist.
 CMD ["sh", "-c", "python scripts/fetch_demo_bundle.py && exec python -m uvicorn backend.app.main:app --host 0.0.0.0 --port ${PORT}"]
