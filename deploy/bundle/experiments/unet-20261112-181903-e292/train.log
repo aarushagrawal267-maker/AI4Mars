@@ -1,0 +1,14 @@
+2026-11-12 18:19:04  Configuration: {"arch": "unet", "model_config": {"base_channels": 16, "depth": 4, "bilinear": true, "dropout": 0.0}, "epochs": 10, "batch_size": 8, "learning_rate": 0.001, "weight_decay": 0.0001, "resolution": 192, "device": "auto", "max_train_samples": null, "max_val_samples": null, "dice_weight": 0.5, "class_weighting": "none", "scheduler": "cosine", "early_stopping_patience": 4, "augment": true, "seed": 42, "num_workers": 0}
+2026-11-12 18:19:04  Device: cpu
+2026-11-12 18:19:04  Training pairs: 3570 of 3570 | validation pairs: 402 of 402 | resolution 192px
+2026-11-12 18:19:04  Model: unet, 1,812,068 parameters, 446 batches/epoch
+2026-11-12 18:23:02  Epoch 1/10  train_loss 1.2249  val_loss 1.1517  val_mIoU 0.3103  val_acc 0.6043  lr 1.00e-03  237s  [best]
+2026-11-12 18:26:49  Epoch 2/10  train_loss 0.9490  val_loss 1.2063  val_mIoU 0.3100  val_acc 0.6635  lr 9.76e-04  227s
+2026-11-12 18:30:29  Epoch 3/10  train_loss 0.8581  val_loss 0.7987  val_mIoU 0.4772  val_acc 0.7984  lr 9.05e-04  220s  [best]
+2026-11-12 18:33:58  Epoch 4/10  train_loss 0.8187  val_loss 0.7965  val_mIoU 0.4725  val_acc 0.7867  lr 7.96e-04  209s
+2026-11-12 18:38:23  Epoch 5/10  train_loss 0.7681  val_loss 0.7344  val_mIoU 0.5085  val_acc 0.8252  lr 6.58e-04  265s  [best]
+2026-11-12 18:43:55  Epoch 6/10  train_loss 0.7173  val_loss 0.6316  val_mIoU 0.5489  val_acc 0.8565  lr 5.05e-04  333s  [best]
+2026-11-12 18:48:04  Epoch 7/10  train_loss 0.6625  val_loss 0.5052  val_mIoU 0.5640  val_acc 0.8873  lr 3.52e-04  249s  [best]
+2026-11-12 18:51:44  Epoch 8/10  train_loss 0.6367  val_loss 0.5394  val_mIoU 0.5830  val_acc 0.8853  lr 2.14e-04  220s  [best]
+2026-11-12 18:55:14  Epoch 9/10  train_loss 0.6026  val_loss 0.4874  val_mIoU 0.5878  val_acc 0.8990  lr 1.05e-04  210s  [best]
+2026-11-12 18:58:38  Epoch 10/10  train_loss 0.5762  val_loss 0.4543  val_mIoU 0.6217  val_acc 0.9173  lr 3.42e-05  203s  [best]

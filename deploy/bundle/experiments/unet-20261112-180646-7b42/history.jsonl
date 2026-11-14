@@ -1,0 +1,1 @@
+{"epoch": 1, "train_loss": 1.2248696350730588, "val_loss": 1.151742669881559, "val_pixel_accuracy": 0.6042602183972344, "val_mean_iou": 0.310277639071138, "val_mean_dice": 0.437246023135454, "val_per_class_iou": {"soil": 0.49150652885232865, "bedrock": 0.3553934466835188, "sand": 0.3942105807487044, "big_rock": 0.0}, "learning_rate": 0.001, "epoch_seconds": 262.41336035728455}

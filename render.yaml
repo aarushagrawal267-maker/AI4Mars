@@ -14,10 +14,6 @@ services:
         value: "true"
       - key: MTI_ADMIN_TOKEN
         generateValue: true
-      - key: MTI_DEMO_BUNDLE_URL
-        sync: false
-      - key: MTI_DEMO_BUNDLE_SHA256
-        sync: false
       - key: MTI_MODEL_CACHE_SIZE
         value: "1"
       - key: MTI_MAX_OUTPUT_SIDE

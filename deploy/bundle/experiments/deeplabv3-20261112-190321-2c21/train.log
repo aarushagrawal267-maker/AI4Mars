@@ -1,0 +1,15 @@
+2026-11-12 19:03:22  Configuration: {"arch": "deeplabv3", "model_config": {"backbone": "mobilenet_v3_large", "pretrained": "coco"}, "epochs": 10, "batch_size": 8, "learning_rate": 0.001, "weight_decay": 0.0001, "resolution": 192, "device": "auto", "max_train_samples": null, "max_val_samples": null, "dice_weight": 0.5, "class_weighting": "none", "scheduler": "cosine", "early_stopping_patience": 4, "augment": true, "seed": 42, "num_workers": 0}
+2026-11-12 19:03:22  Device: cpu
+2026-11-12 19:03:22  Training pairs: 3570 of 3570 | validation pairs: 402 of 402 | resolution 192px
+2026-11-12 19:03:22  DeepLabV3 pretrained weights loaded: True
+2026-11-12 19:03:22  Model: deeplabv3, 11,021,108 parameters, 446 batches/epoch
+2026-11-12 19:06:09  Epoch 1/10  train_loss 0.7578  val_loss 0.4883  val_mIoU 0.6545  val_acc 0.8985  lr 1.00e-03  167s  [best]
+2026-11-12 19:09:03  Epoch 2/10  train_loss 0.5884  val_loss 0.5554  val_mIoU 0.6094  val_acc 0.8845  lr 9.76e-04  174s
+2026-11-12 19:11:59  Epoch 3/10  train_loss 0.5058  val_loss 0.3864  val_mIoU 0.6891  val_acc 0.9282  lr 9.05e-04  176s  [best]
+2026-11-12 19:14:54  Epoch 4/10  train_loss 0.4745  val_loss 0.5265  val_mIoU 0.7155  val_acc 0.9122  lr 7.96e-04  175s  [best]
+2026-11-12 19:18:00  Epoch 5/10  train_loss 0.4271  val_loss 0.4874  val_mIoU 0.6387  val_acc 0.9094  lr 6.58e-04  186s
+2026-11-12 19:20:59  Epoch 6/10  train_loss 0.3854  val_loss 0.4382  val_mIoU 0.6890  val_acc 0.9203  lr 5.05e-04  178s
+2026-11-12 19:24:04  Epoch 7/10  train_loss 0.3311  val_loss 0.3571  val_mIoU 0.7241  val_acc 0.9312  lr 3.52e-04  185s  [best]
+2026-11-12 19:26:54  Epoch 8/10  train_loss 0.3172  val_loss 0.3114  val_mIoU 0.7397  val_acc 0.9493  lr 2.14e-04  170s  [best]
+2026-11-12 19:29:59  Epoch 9/10  train_loss 0.2842  val_loss 0.3276  val_mIoU 0.7169  val_acc 0.9380  lr 1.05e-04  185s
+2026-11-12 19:33:10  Epoch 10/10  train_loss 0.2677  val_loss 0.3366  val_mIoU 0.7047  val_acc 0.9359  lr 3.42e-05  190s
