@@ -40,6 +40,12 @@ export default function ImageAnalysis() {
   const [running, setRunning] = useState(false);
   const [runError, setRunError] = useState<Error | null>(null);
   const [result, setResult] = useState<Analysis | null>(null);
+  const [progress, setProgress] = useState('');
+  useEffect(() => {
+    const on = (e: Event) => setProgress(String((e as CustomEvent).detail ?? ''));
+    window.addEventListener('mti-demo-progress', on);
+    return () => window.removeEventListener('mti-demo-progress', on);
+  }, []);
 
   const list = useMemo(() => models.data?.models ?? [], [models.data]);
   const real = list.filter((m) => !m.is_fixture);
@@ -79,6 +85,7 @@ export default function ImageAnalysis() {
     if (!modelId) return;
     setRunning(true);
     setRunError(null);
+    setProgress('');
     try {
       const a = source === 'upload' && file ? await api.predictUpload(modelId, file) : await api.predictSample(modelId, sampleId);
       setResult(a);
@@ -150,7 +157,7 @@ export default function ImageAnalysis() {
                   </div>
                 )}
                 <button className="btn-primary w-full py-2.5" disabled={!canRun} onClick={run} data-testid="run-analysis">
-                  {running ? <><span className="h-4 w-4 animate-spin rounded-full border-2 border-accent-ink/30 border-t-accent-ink" /> Running inference…</> : <><Play className="h-4 w-4" /> Run analysis</>}
+                  {running ? <><span className="h-4 w-4 animate-spin rounded-full border-2 border-accent-ink/30 border-t-accent-ink" /> {progress || 'Running inference…'}</> : <><Play className="h-4 w-4" /> Run analysis</>}
                 </button>
                 {runError && <ErrorBanner error={runError} />}
               </div>

@@ -12,6 +12,7 @@ import { useRemote } from '../hooks/usePolling';
 import { api, toTrainRequest } from '../services/api';
 import type { Estimate, TrainConfig, TrainingStatus } from '../types/api';
 import { archLabel, compact, cx, duration, fixed, int, ratio } from '../utils/format';
+import { IS_DEMO } from '../demo/env';
 
 const ARCH_INFO = {
   unet: {
@@ -52,7 +53,14 @@ export default function ModelTraining() {
         </EmptyState>
       ) : (
         <div className="grid gap-6 xl:grid-cols-[400px_minmax(0,1fr)]">
-          <ConfigPanel defaults={defaults.data} disabled={active} onStarted={() => api.trainingStatus().then(setStatus)} />
+          {IS_DEMO ? (
+            <Panel title="Training needs the full app" icon={BrainCircuit} ticks>
+              <p className="text-sm leading-relaxed text-ink-2">Training runs on the Python backend with the AI4Mars training images, which are not part of this browser edition. On the right is the most recent real training run from the local platform: its loss curves, validation metrics and full log.</p>
+              <p className="mt-3 text-sm text-ink-2">To train your own models, install the app from <a className="text-accent underline" href="https://github.com/aarushagrawal267-maker/AI4Mars" target="_blank" rel="noreferrer">GitHub</a> and run <code className="num">setup.ps1</code>.</p>
+            </Panel>
+          ) : (
+            <ConfigPanel defaults={defaults.data} disabled={active} onStarted={() => api.trainingStatus().then(setStatus)} />
+          )}
           <Monitor status={status} error={statusError} />
         </div>
       )}

@@ -14,6 +14,7 @@ import { useRemote } from '../hooks/usePolling';
 import { api } from '../services/api';
 import type { Analysis, ClassKey, DatasetStatistics, Sample, SplitStats, ValidationReport } from '../types/api';
 import { bytes, CLASS_KEYS, CLASS_LABEL, cx, int, pct } from '../utils/format';
+import { IS_DEMO } from '../demo/env';
 
 export default function DatasetExplorer() {
   const { connection } = useApp();
@@ -40,7 +41,11 @@ export default function DatasetExplorer() {
       {status.error && <ErrorBanner error={status.error} onRetry={status.reload} />}
       {!status.data ? (status.error ? null : <Loading />) : (
         <>
-          <Acquisition onChanged={status.reload} />
+          {IS_DEMO ? (
+            <Callout tone="info" title="Dataset in the browser edition">Statistics, the validation report and the folder structure describe the full local dataset (AI4Mars v0.6, Curiosity NavCam). The gallery includes 120 of the 322 expert-labelled test images (min1 labels), including every one that contains big rocks.</Callout>
+          ) : (
+            <Acquisition onChanged={status.reload} />
+          )}
           {!indexed ? (
             status.data.dataset_found ? (
               <EmptyState icon={Database} title="Dataset found but not validated yet" action={<RescanButton onDone={status.reload} />}>

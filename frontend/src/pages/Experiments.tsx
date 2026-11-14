@@ -8,6 +8,7 @@ import { useRemote } from '../hooks/usePolling';
 import { api } from '../services/api';
 import type { Experiment, ExperimentDetail } from '../types/api';
 import { archLabel, compact, cx, duration, fixed, int, ratio, when } from '../utils/format';
+import { IS_DEMO } from '../demo/env';
 
 export default function Experiments() {
   const { connection } = useApp();
@@ -119,7 +120,7 @@ function ExperimentView({ id, onChanged, onDeleted }: { id: string; onChanged: (
     <div className="space-y-6">
       <Panel ticks icon={FlaskConical} eyebrow={e.id}
         title={editing ? <input className="field py-1 text-sm" value={name} onChange={(ev) => { setName(ev.target.value); setDirty(true); }} aria-label="Experiment name" /> : <span className="flex items-center gap-2">{e.name} <StatusBadge state={e.status} /></span>}
-        actions={<>
+        actions={IS_DEMO ? undefined : <>
           {editing ? <button className="btn-primary text-xs" onClick={save}><Save className="h-3.5 w-3.5" /> Save</button>
             : <button className="btn-ghost text-xs" onClick={() => setEditing(true)}><Pencil className="h-3.5 w-3.5" /> Rename</button>}
           <a className="btn-ghost text-xs" href={api.experimentReportUrl(e.id, 'json')} download><Download className="h-3.5 w-3.5" /> JSON</a>

@@ -140,6 +140,12 @@ An optional `docker compose up` route is described in `docker-compose.yml` (CPU 
 
 ## Deploying online
 
+**Try it without installing anything:** the *browser edition* runs the trained U-Net and DeepLabV3 inside your web
+browser (WebAssembly via onnxruntime-web), with the real evaluation results, experiments, dataset statistics, 120
+expert-labelled test images and the navigation simulator: https://claude.ai/artifact/MxTWBvkHmh2pq5HEQG36H6
+(training and evaluation need the full app). Rebuild it with `python scripts/export_web_demo.py`, then
+`cd frontend && VITE_DEMO=1 npx vite build && python ../scripts/finalize_web_demo.py`.
+
 To publish the app at a public URL in read-only **demo mode** (visitors can analyse images and explore results;
 training, evaluation and deletion need an admin token), follow [docs/deploy-render.md](docs/deploy-render.md)
 for Render (Standard plan, 2 GB RAM needed) or use `scripts/deploy_space.py` for a free Hugging Face Space.

@@ -37,3 +37,5 @@ deploy/stage/
 deploy/admin_token.txt
 deploy/mti-demo-bundle.zip
 deploy/mti-demo-bundle.sha256
+frontend/public-demo/
+frontend/dist-demo/
