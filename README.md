@@ -140,6 +140,8 @@ An optional `docker compose up` route is described in `docker-compose.yml` (CPU 
 
 ## Deploying online
 
+**Full app for free:** [docs/deploy-free.md](docs/deploy-free.md) — an Oracle Cloud *Always Free* server (24/7, one command: `deploy/server-setup.sh`) or your own computer with a free Cloudflare Tunnel.
+
 **Streamlit Community Cloud (free):** `streamlit_app/streamlit_app.py` is a Streamlit edition that runs the trained
 models (committed in `deploy/bundle/`) on the server: share.streamlit.io -> Create app -> this repository, branch
 `main`, main file `streamlit_app/streamlit_app.py`. Dependencies come from `streamlit_app/requirements.txt` (CPU PyTorch).
