@@ -32,6 +32,8 @@ class Settings(BaseSettings):
     admin_token: str = ""
     # Keep at most this many stored analyses in public mode (oldest are removed).
     public_max_analyses: int = 200
+    # Number of trained models kept in memory at once (1 = lowest memory, e.g. 512 MB hosting plans).
+    model_cache_size: int = 2
     # Serve the built frontend (frontend/dist) from the API server, for single-container hosting.
     frontend_dist: Path | None = None
 

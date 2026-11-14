@@ -117,6 +117,22 @@ def stage() -> Path:
     return STAGE
 
 
+def bundle_zip() -> Path:
+    """Zip only data/, checkpoints/ and experiments/ of the staged bundle (for Render's MTI_DEMO_BUNDLE_URL)."""
+    import hashlib
+    import zipfile
+    out = ROOT / "deploy" / "mti-demo-bundle.zip"
+    with zipfile.ZipFile(out, "w", zipfile.ZIP_STORED) as zf:
+        for top in ("data", "checkpoints", "experiments"):
+            for p in sorted((STAGE / top).rglob("*")):
+                if p.is_file():
+                    zf.write(p, p.relative_to(STAGE).as_posix())
+    digest = hashlib.sha256(out.read_bytes()).hexdigest()
+    (out.with_suffix(".sha256")).write_text(digest + "\n")
+    print(f"bundle {out} ({out.stat().st_size / 1e6:.0f} MB) sha256 {digest}")
+    return out
+
+
 def push(space: str) -> None:
     token = os.environ.get("HF_TOKEN")
     if not token:
@@ -143,11 +159,14 @@ def main() -> None:
     ap.add_argument("--stage", action="store_true")
     ap.add_argument("--push", action="store_true")
     ap.add_argument("--space", help="<hf-username>/<space-name>")
+    ap.add_argument("--bundle", action="store_true", help="also write deploy/mti-demo-bundle.zip (for Render)")
     a = ap.parse_args()
-    if not (a.stage or a.push):
-        ap.error("use --stage and/or --push")
+    if not (a.stage or a.push or a.bundle):
+        ap.error("use --stage, --bundle and/or --push")
     if a.stage or not STAGE.exists():
         stage()
+    if a.bundle:
+        bundle_zip()
     if a.push:
         if not a.space:
             ap.error("--push needs --space <user>/<name>")

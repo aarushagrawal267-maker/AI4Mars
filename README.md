@@ -138,6 +138,14 @@ An optional `docker compose up` route is described in `docker-compose.yml` (CPU 
 
 ---
 
+## Deploying online
+
+To publish the app at a public URL in read-only **demo mode** (visitors can analyse images and explore results;
+training, evaluation and deletion need an admin token), follow [docs/deploy-render.md](docs/deploy-render.md)
+for Render (Standard plan, 2 GB RAM needed) or use `scripts/deploy_space.py` for a free Hugging Face Space.
+
+---
+
 ## Your first session, step by step
 
 1. **Load the dataset** — *Dataset Explorer → Download subset.* Pick the number of training pairs (3,000 ≈ 1.2 GB is a
