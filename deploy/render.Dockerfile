@@ -1,4 +1,4 @@
-# Render (or any Docker host) building straight from the GitHub repository.
+# Render, Hugging Face Spaces or any Docker host, building from the repository source.
 # Stage 1 builds the website; stage 2 runs FastAPI, which serves the API and the website on $PORT.
 FROM node:20-slim AS web
 WORKDIR /web
@@ -18,6 +18,9 @@ COPY ml ./ml
 COPY scripts ./scripts
 COPY --from=web /web/dist ./frontend_dist
 RUN mkdir -p data/raw/imports data/processed data/analyses checkpoints experiments
+# Run as an unprivileged user (uid 1000, which Hugging Face Spaces also require); it owns the writable folders.
+RUN useradd -m -u 1000 user && chown -R user /app
+USER user
 ENV MTI_FRONTEND_DIST=/app/frontend_dist PORT=10000
 EXPOSE 10000
 # Fetch the trained models + results bundle (if MTI_DEMO_BUNDLE_URL is set), then start the server.
