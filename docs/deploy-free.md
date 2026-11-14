@@ -1,7 +1,30 @@
 # Deploying the full app for free
 
 The full app (React website + FastAPI + PyTorch) needs about 650 MB of memory and a Docker-capable host. Free plans of
-Render (512 MB) and Hugging Face (Docker Spaces need PRO) cannot run it. Two free ways that can:
+Render (512 MB) and Hugging Face (Docker Spaces need PRO) cannot run it. Free ways that can:
+
+- **GitHub Codespaces** (no card): a free cloud machine with 8 GB RAM and a public link while it runs — see below.
+- **Oracle Cloud Always Free** (card for verification): a permanent 24/7 server.
+- **Your own computer + Cloudflare Tunnel**: a public link while your computer is on.
+
+## GitHub Codespaces (free, no card)
+
+Personal GitHub accounts include 120 core-hours of Codespaces per month (about 60 hours on the 2-core machine).
+
+1. Open https://codespaces.new/aarushagrawal267-maker/AI4Mars?quickstart=1 (or repository page -> **Code** ->
+   **Codespaces** -> **Create codespace on main**). Choose the **2-core / 8 GB** machine if asked.
+2. Wait for the first setup (about 10 minutes: it installs PyTorch and the website). The configuration in
+   `.devcontainer/` then starts the full app automatically (`deploy/codespace-start.sh`).
+3. Open the **PORTS** tab: port **8000** must show **Public** visibility (the script tries to set it; otherwise
+   right-click the port -> **Port Visibility** -> **Public**). The **Forwarded Address**
+   (`https://<codespace-name>-8000.app.github.dev`) is the public link anyone can open.
+4. Admin password for Settings -> Admin token: run `cat .mti_admin_token` in the terminal.
+
+The link works while the codespace runs. It stops after a period without editor activity (default 30 minutes;
+up to 4 hours in GitHub -> Settings -> Codespaces -> Default idle timeout). Reopen it from github.com/codespaces —
+the app starts again automatically and keeps its data; the link stays the same.
+
+Comparison of the other two options:
 
 | | Oracle Cloud "Always Free" server | Your own computer + Cloudflare Tunnel |
 |---|---|---|

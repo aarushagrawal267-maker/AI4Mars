@@ -140,7 +140,7 @@ An optional `docker compose up` route is described in `docker-compose.yml` (CPU 
 
 ## Deploying online
 
-**Full app for free:** [docs/deploy-free.md](docs/deploy-free.md) — an Oracle Cloud *Always Free* server (24/7, one command: `deploy/server-setup.sh`) or your own computer with a free Cloudflare Tunnel.
+**Full app for free:** [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/aarushagrawal267-maker/AI4Mars?quickstart=1) starts the complete app on a free GitHub cloud machine with a public link ([docs/deploy-free.md](docs/deploy-free.md)); alternatively an Oracle Cloud *Always Free* server (24/7, one command: `deploy/server-setup.sh`) or your own computer with a free Cloudflare Tunnel.
 
 **Streamlit Community Cloud (free):** `streamlit_app/streamlit_app.py` is a Streamlit edition that runs the trained
 models (committed in `deploy/bundle/`) on the server: share.streamlit.io -> Create app -> this repository, branch

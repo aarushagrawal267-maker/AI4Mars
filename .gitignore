@@ -45,3 +45,4 @@ deploy/hf-space/
 !deploy/bundle/**
 deploy/bundle/**/*.sqlite3-*
 deploy/hf-static/
+.mti_admin_token
