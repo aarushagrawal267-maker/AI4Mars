@@ -43,3 +43,4 @@ deploy/hf-space/
 
 # The committed demo bundle for hosted deployments (overrides the *.pt / *.sqlite3 rules above)
 !deploy/bundle/**
+deploy/bundle/**/*.sqlite3-*
