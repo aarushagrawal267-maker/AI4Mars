@@ -8,7 +8,11 @@ from __future__ import annotations
 import logging
 from contextlib import asynccontextmanager
 
+import hmac
+from pathlib import Path
+
 from fastapi import FastAPI, Request
+from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
@@ -61,8 +65,36 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         log.exception("Unhandled error")
         return JSONResponse(status_code=500, content={"detail": "Internal server error. See the backend log."})
 
+    # Public demo mode: anyone may browse, analyse images and plan routes; everything that changes
+    # shared state or starts heavy work needs the admin token.
+    public_ok = {("POST", "/api/predict"), ("POST", "/api/navigation/plan")}
+
+    @app.middleware("http")
+    async def _public_guard(request: Request, call_next):
+        if settings.public_mode and request.method in ("POST", "PUT", "PATCH", "DELETE") \
+                and request.url.path.startswith("/api/") and (request.method, request.url.path) not in public_ok:
+            supplied = request.headers.get("x-admin-token", "")
+            if not settings.admin_token or not hmac.compare_digest(supplied, settings.admin_token):
+                return JSONResponse(status_code=403, content={"detail": (
+                    "This is a public demo: training, dataset changes, evaluation, deletion and settings are "
+                    "disabled. Enter the admin token in Settings to unlock them.")})
+        return await call_next(request)
+
     for module in (system, dataset, training, experiments, predict, evaluate, navigation):
         app.include_router(module.router, prefix="/api")
+
+    dist = Path(settings.frontend_dist) if settings.frontend_dist else None
+    if dist and (dist / "index.html").is_file():
+        root = dist.resolve()
+
+        @app.get("/{path:path}", include_in_schema=False)
+        async def _frontend(path: str):
+            if path.startswith("api/"):
+                return JSONResponse(status_code=404, content={"detail": "Not found"})
+            target = (root / path).resolve()
+            if path and target.is_file() and root in target.parents:
+                return FileResponse(target)
+            return FileResponse(root / "index.html")  # client-side routes such as /analysis
     return app
 
 

@@ -36,6 +36,7 @@ export interface SystemInfo {
   limits: { max_upload_mb: number; max_output_side: number };
   counts: { experiments: number; evaluations: number; analyses: number };
   test_fixture_enabled: boolean;
+  public_mode?: boolean;
 }
 
 export interface Job {

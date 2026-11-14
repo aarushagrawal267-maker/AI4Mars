@@ -67,6 +67,7 @@ def system_info(ctx: Context = Depends(get_ctx)) -> dict:
         "limits": {"max_upload_mb": s.max_upload_mb, "max_output_side": s.max_output_side},
         "counts": counts,
         "test_fixture_enabled": s.enable_test_fixture,
+        "public_mode": s.public_mode,
     }
 
 

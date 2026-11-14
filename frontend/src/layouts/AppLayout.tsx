@@ -163,6 +163,7 @@ export default function AppLayout() {
   const [open, setOpen] = useState(false);
   const { connection } = useApp();
   const location = useLocation();
+  const sys = useRemote(() => api.systemInfo(), [connection], null);
   useEffect(() => setOpen(false), [location.pathname]);
   return (
     <div className="flex min-h-full">
@@ -185,6 +186,12 @@ export default function AppLayout() {
           <div role="alert" className="relative border-b border-bad/30 bg-bad/[0.08] px-4 py-2.5 text-sm text-ink-2 md:px-8">
             <span className="font-medium text-bad">Backend unreachable.</span> Start it with <code className="num text-ink">.\start.ps1</code> (or{' '}
             <code className="num text-ink">uvicorn backend.app.main:app --port 8000</code>). Data on this page will refresh automatically once it is up.
+          </div>
+        )}
+        {sys.data?.public_mode && (
+          <div className="relative border-b border-info/30 bg-info/[0.07] px-4 py-2 text-xs text-ink-2 md:px-8">
+            <span className="font-medium text-info">Public demo.</span> Browse results, analyse your own images and plan routes.
+            Training, dataset changes, evaluation and deletion are disabled. Uploaded images and their analyses are visible to other visitors.
           </div>
         )}
         <main className="relative mx-auto w-full max-w-[1500px] flex-1 px-4 py-7 md:px-8">
