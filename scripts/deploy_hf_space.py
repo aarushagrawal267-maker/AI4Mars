@@ -1,12 +1,9 @@
 """Deploy the full app (public demo mode) to a free Hugging Face Space, from the repository source.
 
-    HF_TOKEN=hf_xxx python scripts/deploy_hf_space.py \\
-        --space <hf-username>/mars-terrain-intelligence \\
-        --bundle-url https://huggingface.co/datasets/<hf-username>/<dataset>/resolve/main/mti-demo-bundle.zip \\
-        [--bundle-sha256 <hex>] [--wait]
+    HF_TOKEN=hf_xxx python scripts/deploy_hf_space.py --space <hf-username>/mars-terrain-intelligence --wait
 
-The Space builds deploy/render.Dockerfile (website + API in one container). At start-up the container downloads
-the trained models, results database and test images from --bundle-url (see scripts/fetch_demo_bundle.py).
+The Space builds deploy/render.Dockerfile (website + API in one container) with the trained models, results
+database and test images from deploy/bundle/ baked into the image.
 Visitors can browse and analyse images; training, evaluation and deletion need the admin token, which is
 stored as a Space secret and printed once (also saved to deploy/admin_token.txt, which Git ignores).
 Use --dry-run to build the upload folder without contacting Hugging Face.
@@ -51,6 +48,9 @@ def stage() -> Path:
     STAGE.mkdir(parents=True)
     for name in ("backend", "ml", "scripts", "frontend"):
         shutil.copytree(ROOT / name, STAGE / name, ignore=SKIP)
+    # trained models, results database and test split: the Dockerfile copies deploy/bundle into the image
+    shutil.copytree(ROOT / "deploy" / "bundle", STAGE / "deploy" / "bundle",
+                    ignore=shutil.ignore_patterns("*.sqlite3-shm", "*.sqlite3-wal"))
     shutil.copy2(ROOT / "requirements.txt", STAGE / "requirements.txt")
     shutil.copy2(ROOT / "deploy" / "render.Dockerfile", STAGE / "Dockerfile")
     (STAGE / "README.md").write_text(README, encoding="utf-8")
@@ -69,7 +69,7 @@ def space_url(space: str) -> str:
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--space", required=True, help="<hf-username>/<space-name>")
-    ap.add_argument("--bundle-url", required=True, help="direct, public download link to mti-demo-bundle.zip")
+    ap.add_argument("--bundle-url", default="", help="optional: only needed if deploy/bundle is missing")
     ap.add_argument("--bundle-sha256", default="")
     ap.add_argument("--wait", action="store_true", help="wait until the Space is running (or fails)")
     ap.add_argument("--dry-run", action="store_true")
@@ -88,7 +88,9 @@ def main() -> None:
     api = HfApi(token=token)
     print("signed in as", api.whoami().get("name"))
     api.create_repo(a.space, repo_type="space", space_sdk="docker", exist_ok=True)
-    variables = {"MTI_PUBLIC_MODE": "true", "MTI_DEMO_BUNDLE_URL": a.bundle_url, "MTI_CORS_ORIGINS": ""}
+    variables = {"MTI_PUBLIC_MODE": "true", "MTI_CORS_ORIGINS": ""}
+    if a.bundle_url:
+        variables["MTI_DEMO_BUNDLE_URL"] = a.bundle_url
     if a.bundle_sha256:
         variables["MTI_DEMO_BUNDLE_SHA256"] = a.bundle_sha256
     for k, v in variables.items():
