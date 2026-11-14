@@ -140,6 +140,10 @@ An optional `docker compose up` route is described in `docker-compose.yml` (CPU 
 
 ## Deploying online
 
+**Streamlit Community Cloud (free):** `streamlit_app/streamlit_app.py` is a Streamlit edition that runs the trained
+models (committed in `deploy/bundle/`) on the server: share.streamlit.io -> Create app -> this repository, branch
+`main`, main file `streamlit_app/streamlit_app.py`. Dependencies come from `streamlit_app/requirements.txt` (CPU PyTorch).
+
 **Try it without installing anything:** the *browser edition* runs the trained U-Net and DeepLabV3 inside your web
 browser (WebAssembly via onnxruntime-web), with the real evaluation results, experiments, dataset statistics, 120
 expert-labelled test images and the navigation simulator: https://claude.ai/artifact/MxTWBvkHmh2pq5HEQG36H6
