@@ -1,4 +1,6 @@
-"""Deploy the full app (public demo mode) to a free Hugging Face Space, from the repository source.
+"""Deploy the full app (public demo mode) to a Hugging Face Docker Space, from the repository source.
+
+Docker Spaces require a Hugging Face PRO subscription (free accounts get HTTP 402 "Payment Required").
 
     HF_TOKEN=hf_xxx python scripts/deploy_hf_space.py --space <hf-username>/mars-terrain-intelligence --wait
 
