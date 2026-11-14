@@ -15,9 +15,11 @@ if [ ! -f frontend/dist/index.html ] || [ -n "$(find frontend/src -newer fronten
 fi
 
 # First start: begin with the trained models, results and test images from deploy/bundle.
-if [ ! -f data/mti.sqlite3 ]; then
+# (setup.sh may already have created an empty database, so check for trained models instead.)
+if ! ls checkpoints/*/best.pt >/dev/null 2>&1; then
   echo "==> Copying the trained models and results"
   mkdir -p data checkpoints experiments
+  rm -f data/mti.sqlite3 data/mti.sqlite3-shm data/mti.sqlite3-wal  # empty database from setup.sh
   cp -rn deploy/bundle/data/. data/ 2>/dev/null
   cp -rn deploy/bundle/checkpoints/. checkpoints/ 2>/dev/null
   cp -rn deploy/bundle/experiments/. experiments/ 2>/dev/null
