@@ -14,7 +14,6 @@ import argparse
 import os
 import secrets
 import shutil
-import sys
 import time
 from pathlib import Path
 
@@ -80,13 +79,16 @@ def main() -> None:
     if a.dry_run:
         print("dry run: nothing uploaded")
         return
-    token = os.environ.get("HF_TOKEN")
-    if not token:
-        sys.exit("Set HF_TOKEN to a Hugging Face access token with Write permission.")
+    # The token comes from HF_TOKEN, or is added to requests by an outbound proxy ("network secret" for
+    # huggingface.co); in the second case the library sends requests without a local token.
+    token = os.environ.get("HF_TOKEN") or None
     from huggingface_hub import HfApi
 
     api = HfApi(token=token)
-    print("signed in as", api.whoami().get("name"))
+    if token:
+        print("signed in as", api.whoami().get("name"))
+    else:
+        print("HF_TOKEN not set: relying on credentials added to requests by the network (huggingface.co secret)")
     api.create_repo(a.space, repo_type="space", space_sdk="docker", exist_ok=True)
     variables = {"MTI_PUBLIC_MODE": "true", "MTI_CORS_ORIGINS": ""}
     if a.bundle_url:
