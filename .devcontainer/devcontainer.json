@@ -1,0 +1,15 @@
+{
+  "name": "Mars Terrain Intelligence",
+  "image": "mcr.microsoft.com/devcontainers/python:3.12",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": { "version": "20" },
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+  "hostRequirements": { "cpus": 2, "memory": "8gb" },
+  "postCreateCommand": "./setup.sh --cpu-only",
+  "postStartCommand": "bash deploy/codespace-start.sh",
+  "forwardPorts": [8000],
+  "portsAttributes": {
+    "8000": { "label": "Mars Terrain Intelligence", "onAutoForward": "notify" }
+  }
+}
