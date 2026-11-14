@@ -28,13 +28,19 @@ fi
 TOKEN_FILE=.mti_admin_token
 [ -s "$TOKEN_FILE" ] || (umask 077; openssl rand -base64 18 | tr -d '/+=' > "$TOKEN_FILE")
 
-pkill -f "uvicorn backend.app.main:app --host 0.0.0.0 --port 8000" 2>/dev/null || true
+# Stop an earlier instance and wait until port 8000 is free again.
+pkill -f "uvicorn backend.app.main:app" 2>/dev/null || true
+for _ in $(seq 1 15); do curl -fsS http://127.0.0.1:8000/api/health >/dev/null 2>&1 || break; sleep 1; done
 MTI_PUBLIC_MODE=true MTI_ADMIN_TOKEN="$(cat "$TOKEN_FILE")" MTI_FRONTEND_DIST="$PWD/frontend/dist" MTI_CORS_ORIGINS="" \
   nohup .venv/bin/python -m uvicorn backend.app.main:app --host 0.0.0.0 --port 8000 > .run/public.log 2>&1 &
 
 echo "==> Waiting for the app"
-for _ in $(seq 1 60); do curl -fsS http://127.0.0.1:8000/api/health >/dev/null 2>&1 && break; sleep 2; done
-curl -fsS http://127.0.0.1:8000/api/health >/dev/null || { echo "The app did not start; see .run/public.log"; exit 1; }
+for _ in $(seq 1 90); do curl -fsS http://127.0.0.1:8000/api/health >/dev/null 2>&1 && break; sleep 2; done
+if ! curl -fsS http://127.0.0.1:8000/api/health >/dev/null 2>&1; then
+  echo "The app did not start. Last lines of .run/public.log:"
+  tail -n 40 .run/public.log
+  exit 1
+fi
 
 URL="http://localhost:8000"
 if [ -n "${CODESPACE_NAME:-}" ]; then
