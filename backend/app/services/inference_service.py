@@ -20,7 +20,7 @@ from ..database.models import Analysis
 from .model_registry import ModelRegistry
 
 log = logging.getLogger(__name__)
-RENDER_KINDS = ("original", "mask", "overlay", "side_by_side", "confidence", "uncertainty", "class_ids")
+RENDER_KINDS = ("original", "mask", "overlay", "side_by_side", "confidence", "uncertainty", "class_ids", "confidence_raw")
 
 
 class InferenceService:
@@ -131,6 +131,8 @@ class InferenceService:
             return png_bytes(self._load(analysis_id, "original.png"))
         if kind == "class_ids":
             return png_bytes(self._load(analysis_id, "class_ids.png"))
+        if kind == "confidence_raw":  # greyscale, value = confidence * 255 (read by the pixel inspector)
+            return png_bytes(self._load(analysis_id, "confidence.png"))
         if kind == "confidence":
             return png_bytes(heatmap(self._load(analysis_id, "confidence.png") / 255.0, cv2.COLORMAP_VIRIDIS))
         if kind == "uncertainty":

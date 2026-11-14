@@ -8,6 +8,7 @@ import { useApp } from '../context/AppContext';
 import { useRemote } from '../hooks/usePolling';
 import { api } from '../services/api';
 import { cx, duration } from '../utils/format';
+import { IS_DEMO } from '../demo/env';
 
 export interface NavItem {
   to: string;
@@ -112,7 +113,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
         <div className="flex items-center justify-between text-2xs">
           <span className="flex items-center gap-1.5 text-ink-3">
             <span className={cx('h-1.5 w-1.5 rounded-full', connection === 'online' ? 'bg-good' : connection === 'offline' ? 'bg-bad' : 'bg-warn animate-pulse2')} />
-            Backend {connection}
+            {IS_DEMO ? 'Browser edition' : `Backend ${connection}`}
           </span>
           <span className="num text-ink-3">v{health?.version ?? '—'}</span>
         </div>
@@ -148,7 +149,7 @@ function Topbar({ onMenu }: { onMenu: () => void }) {
         )}
         <span className={cx('chip', connection === 'online' ? 'text-good' : connection === 'offline' ? 'text-bad' : 'text-warn')}>
           <span className={cx('h-1.5 w-1.5 rounded-full', connection === 'online' ? 'bg-good' : connection === 'offline' ? 'bg-bad' : 'bg-warn')} />
-          {connection === 'online' ? 'API online' : connection === 'offline' ? 'API offline' : 'Connecting'}
+          {IS_DEMO ? 'Runs in your browser' : connection === 'online' ? 'API online' : connection === 'offline' ? 'API offline' : 'Connecting'}
         </span>
         <button className="btn-ghost p-2" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
           aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`} title="Toggle theme">
@@ -186,6 +187,13 @@ export default function AppLayout() {
           <div role="alert" className="relative border-b border-bad/30 bg-bad/[0.08] px-4 py-2.5 text-sm text-ink-2 md:px-8">
             <span className="font-medium text-bad">Backend unreachable.</span> Start it with <code className="num text-ink">.\start.ps1</code> (or{' '}
             <code className="num text-ink">uvicorn backend.app.main:app --port 8000</code>). Data on this page will refresh automatically once it is up.
+          </div>
+        )}
+        {IS_DEMO && (
+          <div className="relative border-b border-accent/30 bg-accent/[0.07] px-4 py-2 text-xs text-ink-2 md:px-8">
+            <span className="font-medium text-accent">Browser edition.</span> The trained U-Net and DeepLabV3 run on your device; nothing is uploaded.
+            Results, experiments and dataset statistics are the real ones from the local platform. Training and evaluation need the full app
+            (<a className="underline hover:text-accent" href="https://github.com/aarushagrawal267-maker/AI4Mars" target="_blank" rel="noreferrer">GitHub</a>).
           </div>
         )}
         {sys.data?.public_mode && (

@@ -10,6 +10,7 @@ import { useApp } from '../context/AppContext';
 import { useRemote } from '../hooks/usePolling';
 import { api } from '../services/api';
 import type { Evaluation, ExperimentDetail, Job } from '../types/api';
+import { IS_DEMO } from '../demo/env';
 import { archLabel, CLASS_KEYS, CLASS_LABEL, compact, cx, int, ms, ratio, when } from '../utils/format';
 
 export default function ModelEvaluation() {
@@ -36,9 +37,13 @@ export default function ModelEvaluation() {
       {models.error && <ErrorBanner error={models.error} onRetry={models.reload} />}
       {!models.data ? <Loading /> : models.data.models.length === 0 ? <NoModels /> : (
         <>
-          <RunPanel models={models.data.models} indexed={!!ds.data?.indexed} onDone={async (id) => { await evals.reload(); setFocus(id); }} />
+          {IS_DEMO ? (
+            <Callout tone="info" title="Stored results from the local platform">These evaluations were computed by the full app on the held-out expert test set. Running new evaluations needs the Python backend.</Callout>
+          ) : (
+            <RunPanel models={models.data.models} indexed={!!ds.data?.indexed} onDone={async (id) => { await evals.reload(); setFocus(id); }} />
+          )}
           <Panel title="Stored evaluations" icon={BarChart3} padded={false}
-            actions={selected.length > 0 && (
+            actions={selected.length > 0 && !IS_DEMO && (
               <>
                 <span className="text-2xs text-ink-3">{selected.length} selected</span>
                 <a className="btn-ghost text-xs" href={api.evaluationReportUrl(selected, 'csv')} download><Download className="h-3.5 w-3.5" /> CSV</a>
@@ -160,7 +165,7 @@ function EvaluationDetail({ ev }: { ev: Evaluation }) {
         <span className="chip">{archLabel(ev.arch)}</span>
         <span className="chip">{ev.split}{ev.split === 'test' ? ` · ${ev.label_variant}` : ''} · {ev.images} images</span>
         {ev.is_fixture && <span className="chip text-info">TEST FIXTURE · untrained</span>}
-        <div className="ml-auto flex gap-1">
+        <div className={cx('ml-auto flex gap-1', IS_DEMO && 'hidden')}>
           <a className="btn-secondary text-xs" href={api.evaluationReportUrl([ev.id], 'csv')} download><Download className="h-3.5 w-3.5" /> CSV</a>
           <a className="btn-secondary text-xs" href={api.evaluationReportUrl([ev.id], 'json')} download><Download className="h-3.5 w-3.5" /> JSON</a>
         </div>

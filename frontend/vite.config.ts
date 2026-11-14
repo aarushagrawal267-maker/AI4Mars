@@ -4,9 +4,13 @@ import react from '@vitejs/plugin-react';
 
 // The dev server proxies /api to the FastAPI backend, so the browser talks to a single origin.
 const target = process.env.VITE_API_PROXY_TARGET || 'http://127.0.0.1:8000';
+// Browser edition (VITE_DEMO=1): relative paths, bundled demo data, separate output folder.
+const demo = process.env.VITE_DEMO === '1';
 
 export default defineConfig({
   plugins: [react()],
+  base: demo ? './' : '/',
+  publicDir: demo ? 'public-demo' : 'public',
   server: {
     port: 5173,
     strictPort: true,
@@ -16,7 +20,7 @@ export default defineConfig({
     port: 5173,
     proxy: { '/api': { target, changeOrigin: true } },
   },
-  build: { chunkSizeWarningLimit: 1200 },
+  build: { chunkSizeWarningLimit: 1200, outDir: demo ? 'dist-demo' : 'dist' },
   test: {
     environment: 'jsdom',
     globals: true,

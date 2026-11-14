@@ -4,6 +4,7 @@ import { useApp } from '../context/AppContext';
 import { api, type RenderKind } from '../services/api';
 import type { Analysis, ClassKey } from '../types/api';
 import { CLASS_KEYS, CLASS_LABEL, cx } from '../utils/format';
+import { IS_DEMO } from '../demo/env';
 import { ClassLegend, Modal, Segmented } from './ui';
 
 type Mode = 'overlay' | 'mask' | 'original' | 'compare' | 'confidence' | 'uncertainty' | 'side_by_side';
@@ -77,7 +78,7 @@ export default function SegmentationViewer({ analysis, defaultMode = 'overlay', 
   const v = colorVersion;
   const url = (kind: RenderKind, a = alpha) => api.analysisImageUrl(analysis.id, kind, { alpha: a, v });
   const ids = useImagePixels(inspect ? api.analysisImageUrl(analysis.id, 'class_ids') : null);
-  const conf = useImagePixels(inspect ? api.analysisImageUrl(analysis.id, 'confidence') : null);
+  const conf = useImagePixels(inspect ? api.analysisImageUrl(analysis.id, 'confidence_raw') : null);
   const [h, w] = analysis.meta.output_size;
 
   // Debounce alpha so dragging the slider does not request dozens of PNGs.
@@ -108,7 +109,7 @@ export default function SegmentationViewer({ analysis, defaultMode = 'overlay', 
     }
     const px = Math.min(w - 1, Math.floor(fx * w));
     const py = Math.min(h - 1, Math.floor(fy * h));
-    // class_ids.png is greyscale: R channel holds the class id. confidence.png encodes p*255.
+    // class_ids and confidence_raw are greyscale: R holds the class id / confidence * 255.
     const ci = ids ? ids.data[(py * ids.width + px) * 4] : null;
     const cv = conf ? conf.data[(py * conf.width + px) * 4] / 255 : null;
     setProbe({ x: e.clientX - rect.left, y: e.clientY - rect.top, px, py,
@@ -195,7 +196,7 @@ export default function SegmentationViewer({ analysis, defaultMode = 'overlay', 
         ) : (
           <ClassLegend />
         )}
-        <div className="flex items-center gap-1">
+        <div className={cx('flex items-center gap-1', IS_DEMO && 'hidden')}>
           <Eye className="hidden h-3.5 w-3.5 text-ink-3 sm:block" />
           {(['mask', 'overlay', 'side_by_side', 'class_ids'] as RenderKind[]).map((k) => (
             <a key={k} className="btn-ghost px-2 py-1 text-2xs" href={api.analysisImageUrl(analysis.id, k, { alpha: alphaReq, download: true, v })}

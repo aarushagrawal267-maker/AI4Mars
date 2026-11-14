@@ -10,14 +10,11 @@ import type {
 
 export const API_BASE: string = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, '') ?? '';
 
-export class ApiError extends Error {
-  status: number;
-  constructor(status: number, message: string) {
-    super(message);
-    this.status = status;
-    this.name = 'ApiError';
-  }
-}
+import { demoApi } from '../demo/demoApi';
+import { IS_DEMO } from '../demo/env';
+import { ApiError } from './apiError';
+
+export { ApiError };
 
 function describe(detail: unknown): string {
   if (typeof detail === 'string') return detail;
@@ -75,9 +72,9 @@ const json = (method: string, body?: unknown): RequestInit => ({
 /** Absolute URL for <img>/<a href> targets served by the API. */
 export const apiUrl = (path: string) => `${API_BASE}/api${path}`;
 
-export type RenderKind = 'original' | 'mask' | 'overlay' | 'side_by_side' | 'confidence' | 'uncertainty' | 'class_ids';
+export type RenderKind = 'original' | 'mask' | 'overlay' | 'side_by_side' | 'confidence' | 'uncertainty' | 'class_ids' | 'confidence_raw';
 
-export const api = {
+const httpApi = {
   // system
   health: () => request<Health>('/health'),
   systemInfo: () => request<SystemInfo>('/system/info'),
@@ -179,6 +176,9 @@ export const api = {
   saveColors: (colors: Partial<PerClass<string>>) => request<ColorsResponse>('/settings/colors', json('PUT', colors)),
   resetColors: () => request<ColorsResponse>('/settings/colors/reset', json('POST')),
 };
+
+/** In the browser edition every call is answered locally (exported results + in-browser inference). */
+export const api: typeof httpApi = IS_DEMO ? (demoApi as unknown as typeof httpApi) : httpApi;
 
 /** Training request body (the API names the per-architecture options `model_options`). */
 export type TrainRequest = Omit<TrainConfig, 'model_config' | 'num_workers'> & { model_options: Record<string, unknown> };
