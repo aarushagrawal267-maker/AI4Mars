@@ -1,0 +1,26 @@
+# Render Blueprint: New + > Blueprint > select this repository.
+services:
+  - type: web
+    name: mars-terrain-intelligence
+    runtime: docker
+    dockerfilePath: ./deploy/render.Dockerfile
+    dockerContext: .
+    # PyTorch + a loaded model peak at ~550 MB, above the 512 MB of the Free/Starter plans.
+    plan: standard
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: MTI_PUBLIC_MODE
+        value: "true"
+      - key: MTI_ADMIN_TOKEN
+        generateValue: true
+      - key: MTI_DEMO_BUNDLE_URL
+        sync: false
+      - key: MTI_DEMO_BUNDLE_SHA256
+        sync: false
+      - key: MTI_MODEL_CACHE_SIZE
+        value: "1"
+      - key: MTI_MAX_OUTPUT_SIDE
+        value: "1024"
+      - key: MTI_CORS_ORIGINS
+        value: ""

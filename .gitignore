@@ -35,3 +35,5 @@ Thumbs.db
 # Deployment staging and secrets
 deploy/stage/
 deploy/admin_token.txt
+deploy/mti-demo-bundle.zip
+deploy/mti-demo-bundle.sha256

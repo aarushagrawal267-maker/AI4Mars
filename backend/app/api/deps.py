@@ -34,7 +34,7 @@ def build_context(settings: Settings) -> Context:
     db = Database(settings.db_url)
     jobs = JobRunner()
     dataset = DatasetService(settings, jobs)
-    registry = ModelRegistry(settings, db)
+    registry = ModelRegistry(settings, db, cache_size=max(1, settings.model_cache_size))
     ctx = Context(settings=settings, db=db, jobs=jobs, dataset=dataset,
                   training=TrainingManager(settings, db, dataset), registry=registry,
                   inference=InferenceService(settings, db, registry),
