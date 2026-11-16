@@ -146,14 +146,11 @@ An optional `docker compose up` route is described in `docker-compose.yml` (CPU 
 models (committed in `deploy/bundle/`) on the server: share.streamlit.io -> Create app -> this repository, branch
 `main`, main file `streamlit_app/streamlit_app.py`. Dependencies come from `streamlit_app/requirements.txt` (CPU PyTorch).
 
-**Public browser edition (free):** https://agrawalaarush08-mars-terrain-intelligence.static.hf.space
-(published with `scripts/deploy_hf_static.py`).
-
 **Try it without installing anything:** the *browser edition* runs the trained U-Net and DeepLabV3 inside your web
 browser (WebAssembly via onnxruntime-web), with the real evaluation results, experiments, dataset statistics, 120
-expert-labelled test images and the navigation simulator: https://claude.ai/artifact/MxTWBvkHmh2pq5HEQG36H6
+expert-labelled test images and the navigation simulator: https://agrawalaarush08-mars-terrain-intelligence.static.hf.space
 (training and evaluation need the full app). Rebuild it with `python scripts/export_web_demo.py`, then
-`cd frontend && VITE_DEMO=1 npx vite build && python ../scripts/finalize_web_demo.py`.
+`cd frontend && VITE_DEMO=1 npx vite build`, and publish it with `python scripts/deploy_hf_static.py --space <user>/<space>`.
 
 To publish the app at a public URL in read-only **demo mode** (visitors can analyse images and explore results;
 training, evaluation and deletion need an admin token), follow [docs/deploy-render.md](docs/deploy-render.md)

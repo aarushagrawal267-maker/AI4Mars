@@ -43,8 +43,7 @@ def main() -> None:
     a = ap.parse_args()
     index = DIST / "index.html"
     if not index.is_file() or not index.read_text(encoding="utf-8").lstrip().lower().startswith("<!doctype"):
-        raise SystemExit("Build the browser edition first: cd frontend && VITE_DEMO=1 npx vite build "
-                         "(do not run finalize_web_demo.py for Hugging Face; it needs a full HTML document)")
+        raise SystemExit("Build the browser edition first: cd frontend && VITE_DEMO=1 npx vite build")
     stage = ROOT / "deploy" / "hf-static"
     if stage.exists():
         shutil.rmtree(stage)
