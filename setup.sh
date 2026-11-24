@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 # One-time setup of Mars Terrain Intelligence on macOS / Linux.
 #
-# Usage: ./setup.sh [--cuda | --cpu-only] [--with-e2e]
-#   --cuda       install the CUDA 12.4 PyTorch build even if nvidia-smi is not found (Linux only)
-#   --cpu-only   install the CPU-only PyTorch build even if an NVIDIA GPU is present
-#   --with-e2e   also download the Playwright Chromium browser for the end-to-end tests
+# Usage: ./setup.sh [--cuda | --cpu-only] [--with-e2e] [--no-demo-models]
+#   --cuda             install the CUDA 12.4 PyTorch build even if nvidia-smi is not found (Linux only)
+#   --cpu-only         install the CPU-only PyTorch build even if an NVIDIA GPU is present
+#   --with-e2e         also download the Playwright Chromium browser for the end-to-end tests
+#   --no-demo-models   start empty instead of installing the pre-trained models from deploy/bundle
 #
 # Set PYTHON=/path/to/python3 to choose a specific interpreter. Safe to run again.
 set -euo pipefail
@@ -18,12 +19,14 @@ VENV_PY="$ROOT/.venv/bin/python"
 FORCE_CUDA=0
 CPU_ONLY=0
 WITH_E2E=0
+DEMO_MODELS=1
 for arg in "$@"; do
   case "$arg" in
     --cuda) FORCE_CUDA=1 ;;
     --cpu-only) CPU_ONLY=1 ;;
     --with-e2e) WITH_E2E=1 ;;
-    -h|--help) sed -n '2,9p' "$0"; exit 0 ;;
+    --no-demo-models) DEMO_MODELS=0 ;;
+    -h|--help) sed -n '2,10p' "$0"; exit 0 ;;
     *) echo "Unknown option: $arg (see --help)" >&2; exit 2 ;;
   esac
 done
@@ -155,6 +158,13 @@ fi
 step "Initialising the SQLite database"
 "$VENV_PY" -c "from backend.app.core.config import get_settings; from backend.app.database.db import Database; s=get_settings(); s.ensure_dirs(); Database(s.db_url); print('database ready')" \
   || fail "Database initialisation failed."
+
+step "Pre-trained models (deploy/bundle)"
+if [ "$DEMO_MODELS" = 1 ]; then
+  "$VENV_PY" scripts/seed_demo_models.py || warn "Could not install the pre-trained models; train your own in the app."
+else
+  info "--no-demo-models given: starting without trained models."
+fi
 
 # ----------------------------------------------------------------------------- 9. hardware diagnostics
 step "Hardware diagnostics"

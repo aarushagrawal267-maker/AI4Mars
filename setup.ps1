@@ -19,12 +19,16 @@
 
 .PARAMETER WithE2E
     Also download the Playwright Chromium browser needed by the end-to-end tests (npm run e2e).
+
+.PARAMETER NoDemoModels
+    Start empty instead of installing the pre-trained U-Net / DeepLabV3 models and results from deploy\bundle.
 #>
 [CmdletBinding()]
 param(
     [switch]$Cuda,
     [switch]$CpuOnly,
-    [switch]$WithE2E
+    [switch]$WithE2E,
+    [switch]$NoDemoModels
 )
 
 $ErrorActionPreference = 'Stop'
@@ -229,6 +233,15 @@ Write-Step 'Initialising the SQLite database'
 Invoke-Checked -FilePath $VenvPython -ArgumentList @('-c',
     "from backend.app.core.config import get_settings; from backend.app.database.db import Database; s=get_settings(); s.ensure_dirs(); Database(s.db_url); print('database ready')") `
     -FailMessage 'Database initialisation failed'
+
+Write-Step 'Pre-trained models (deploy\bundle)'
+if ($NoDemoModels) {
+    Write-Info '-NoDemoModels given: starting without trained models.'
+} else {
+    $seedOut = Get-NativeOutput -FilePath $VenvPython -ArgumentList @('scripts\seed_demo_models.py')
+    if ($null -eq $seedOut) { Write-Warn 'Could not install the pre-trained models; train your own in the app.' }
+    else { Write-Ok $seedOut }
+}
 
 # ----------------------------------------------------------------------------- 9. hardware diagnostics
 Write-Step 'Hardware diagnostics'
