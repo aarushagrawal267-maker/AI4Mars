@@ -57,7 +57,8 @@ npx playwright install chromium   # or run setup.ps1 -WithE2E / ./setup.sh --wit
 ```
 
 The Playwright configuration starts its own backend with `MTI_ENABLE_TEST_FIXTURE=true` on a
-temporary data directory (it does not touch your `data/` folder) together with the frontend. The
+temporary data directory (it does not touch your `data/` folder; the folder is emptied at the start of
+every run so results from an earlier run cannot interfere) together with the frontend. The
 test uploads an image through the web interface and checks that a valid segmentation is returned.
 When no trained checkpoint exists, it uses the clearly labelled **untrained fixture model**
 ("TEST FIXTURE - untrained U-Net (not a real model)"). The fixture exists only when

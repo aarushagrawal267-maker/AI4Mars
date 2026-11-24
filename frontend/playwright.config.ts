@@ -1,4 +1,5 @@
 import { defineConfig, devices } from '@playwright/test';
+import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -11,6 +12,13 @@ import { fileURLToPath } from 'node:url';
 const here = path.dirname(fileURLToPath(import.meta.url));
 const repo = path.resolve(here, '..');
 const tmp = path.join(os.tmpdir(), 'mti-e2e');
+// Start every run from an empty data folder, otherwise analyses left over from the previous run show up in the
+// "recent analyses" list and the upload test sees the file name twice. The runner loads this file before it starts
+// the web servers; the worker processes inherit MTI_E2E_CLEANED and so never delete the folder of a running backend.
+if (!process.env.MTI_E2E_CLEANED) {
+  process.env.MTI_E2E_CLEANED = '1';
+  fs.rmSync(tmp, { recursive: true, force: true });
+}
 const python = process.platform === 'win32' ? path.join(repo, '.venv', 'Scripts', 'python.exe') : path.join(repo, '.venv', 'bin', 'python');
 
 export default defineConfig({
