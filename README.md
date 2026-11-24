@@ -28,6 +28,7 @@ statistics, and experiment with terrain-aware A\* route planning — all through
 10. [REST API](#rest-api)
 11. [Troubleshooting](#troubleshooting)
 12. [Scientific notes, limitations and citation](#scientific-notes-limitations-and-citation)
+13. [License](#license)
 
 ---
 
@@ -55,7 +56,7 @@ statistics, and experiment with terrain-aware A\* route planning — all through
 
 ## Quick start on Windows
 
-**You need:** Windows 10/11, [Python 3.10 – 3.12](https://www.python.org/downloads/) (tick *“Add python.exe to PATH”*),
+**You need:** Windows 10/11, [Python 3.10 or newer](https://www.python.org/downloads/) (tested on 3.12 and 3.13) (tick *“Add python.exe to PATH”*),
 [Node.js 18+ LTS](https://nodejs.org/), [Git](https://git-scm.com/), about 3 GB of free disk for the software plus
 1.5 GB for a 4,000-image dataset subset. An NVIDIA GPU is optional (detected automatically).
 
@@ -76,7 +77,8 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 ```
 
 Install everything (Python virtual environment, PyTorch — CUDA build if an NVIDIA GPU is found, otherwise CPU —
-backend and frontend packages, folders, database, hardware check):
+backend and frontend packages, folders, database, the **pre-trained U-Net and DeepLabV3 models** with their real
+results and the 322 expert-labelled test images from `deploy/bundle`, hardware check):
 
 ```powershell
 .\setup.ps1
@@ -95,7 +97,7 @@ Stop it:
 ```
 
 `setup.ps1` options: `-CpuOnly` (force CPU PyTorch), `-Cuda` (force the CUDA build), `-WithE2E` (also install the
-Playwright browser for end-to-end tests). Logs from `start.ps1` go to `.run\`.
+Playwright browser for end-to-end tests), `-NoDemoModels` (start with no trained model and train your own). Logs from `start.ps1` go to `.run\`.
 
 ## Quick start on macOS / Linux
 
@@ -111,6 +113,8 @@ Playwright browser for end-to-end tests). Logs from `start.ps1` go to `.run\`.
 ./stop.sh
 ```
 
+`setup.sh` takes the same options as `--cpu-only`, `--cuda`, `--with-e2e` and `--no-demo-models`.
+
 ## Manual start (any OS)
 
 Backend (from the repository root, inside the virtual environment):
@@ -121,6 +125,10 @@ python -m venv .venv
 
 ```bash
 .venv/bin/pip install -r requirements.txt          # Windows: .venv\Scripts\pip install -r requirements.txt
+```
+
+```bash
+.venv/bin/python scripts/seed_demo_models.py       # optional: install the pre-trained models and results
 ```
 
 ```bash
@@ -160,6 +168,12 @@ for Render (Standard plan, 2 GB RAM needed) or use `scripts/deploy_hf_space.py` 
 
 ## Your first session, step by step
 
+**Just want to see it work?** Setup already installed the two trained models, so open *Image Analysis*, pick
+*Dataset test image* (or upload a rover photo), choose a model and click **Run analysis**; then look at *Model
+Evaluation*, *Experiments*, *Terrain Intelligence* and the *Navigation Simulator*. No download or training needed.
+(Installed setup without them? Run `python scripts/seed_demo_models.py` at any time; it never overwrites your own
+models or results.) To reproduce everything yourself:
+
 1. **Load the dataset** — *Dataset Explorer → Download subset.* Pick the number of training pairs (3,000 ≈ 1.2 GB is a
    good laptop start) and click **Download & validate**. Only the Curiosity NavCam files you need are fetched from the
    verified Zenodo record, CRC-checked, then every image/label pair is validated and indexed. Already have the ZIP
@@ -187,7 +201,7 @@ measures your machine. A CUDA GPU is typically one to two orders of magnitude fa
 
 | Suite | Command | What it covers |
 |-------|---------|----------------|
-| Python (68 tests) | `.venv\Scripts\python -m pytest` | Model shapes, 4-class output, ignore-index loss, checkpoints, inference, metrics vs scikit-learn, dataset validation, range-request download, A\* optimality, every API endpoint, database persistence, a real tiny training run |
+| Python (75 tests) | `.venv\Scripts\python -m pytest` | Model shapes, 4-class output, ignore-index loss, checkpoints, inference, metrics vs scikit-learn, dataset validation, range-request download, A\* optimality, every API endpoint, database persistence, a real tiny training run |
 | Frontend (15 tests) | `cd frontend` then `npm test` | Navigation, upload & validation, API errors, empty states, model selection, training controls, result rendering |
 | End-to-end (3 tests) | `cd frontend` then `npx playwright install chromium` (once) and `npm run e2e` | Uploads an image in a real browser and verifies a valid segmentation; invalid uploads; every page loads |
 
@@ -267,7 +281,11 @@ AI4Mars/
 │   └── inference/       predictor, terrain statistics, visualisation
 ├── frontend/            React + TypeScript + Vite + Tailwind + Recharts (src/pages, components, charts, services, …)
 ├── tests/               pytest suites (ml/, backend/)
-├── scripts/             download_dataset.py, run_baseline_experiments.py
+├── scripts/             download_dataset.py, run_baseline_experiments.py, seed_demo_models.py (install the
+│                        pre-trained models), results_table.py, export_web_demo.py, deploy_*.py
+├── deploy/              Dockerfiles, server/Codespace start scripts and bundle/ (trained checkpoints, results
+│                        database and the 322-image expert test split used by setup and hosted demos)
+├── streamlit_app/       Streamlit edition (runs the bundled models; for Streamlit Community Cloud)
 ├── docs/                architecture, dataset, models, training, evaluation, navigation, limitations, references, testing
 ├── data/                (git-ignored) raw dataset, processed cache, analyses, SQLite database
 ├── checkpoints/         (git-ignored) best.pt / last.pt per experiment
@@ -276,7 +294,8 @@ AI4Mars/
 └── requirements.txt  .env.example  docker-compose.yml
 ```
 
-Datasets, checkpoints, generated images and the database are never committed.
+Your own datasets, checkpoints, generated images and the database are never committed; the only committed model
+files are the small demo bundle in `deploy/bundle/`.
 
 ## Configuration
 
@@ -331,3 +350,9 @@ If you use this work, please cite the dataset and paper:
 > Autonomous Driving on Mars.* CVPR Workshops, 2021. Dataset: doi:10.5281/zenodo.15995036.
 
 Full reference list: [docs/references.md](docs/references.md).
+
+## License
+
+The source code is released under the [MIT License](LICENSE). The AI4Mars images and labels (including the copies
+in `deploy/bundle/data`) are © NASA/JPL-Caltech and the dataset authors and are licensed separately under
+CC-BY-4.0 — cite the dataset as shown above when you reuse them.
