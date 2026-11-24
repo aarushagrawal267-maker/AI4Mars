@@ -61,10 +61,10 @@ done
 ok "Python $("$PY" -c 'import platform; print(platform.python_version())') ($PY)"
 
 # ----------------------------------------------------------------------------- 2. Node.js and npm
-step "Checking Node.js (18 or newer) and npm"
+step "Checking Node.js (20 or newer) and npm"
 command -v node >/dev/null 2>&1 || fail "Node.js was not found. Install the LTS version from https://nodejs.org/ (or via nvm/Homebrew)."
 NODE_MAJOR="$(node -p 'process.versions.node.split(".")[0]' 2>/dev/null || echo 0)"
-[ "$NODE_MAJOR" -ge 18 ] 2>/dev/null || fail "Node.js $(node --version 2>/dev/null) is too old. Install Node.js 18 or newer (LTS)."
+[ "$NODE_MAJOR" -ge 20 ] 2>/dev/null || fail "Node.js $(node --version 2>/dev/null) is too old. Install Node.js 20 or newer (LTS)."
 ok "Node.js $(node --version)"
 command -v npm >/dev/null 2>&1 || fail "npm was not found. It is installed together with Node.js."
 ok "npm $(npm --version)"

@@ -3,7 +3,7 @@
     One-time setup of Mars Terrain Intelligence on Windows (Windows PowerShell 5.1+ or PowerShell 7).
 
 .DESCRIPTION
-    Checks Python (>= 3.10) and Node.js (>= 18), creates .venv, installs PyTorch (CUDA 12.4 build when an
+    Checks Python (>= 3.10) and Node.js (>= 20), creates .venv, installs PyTorch (CUDA 12.4 build when an
     NVIDIA GPU is detected, otherwise the CPU build), installs the Python requirements and the frontend
     packages, creates the local data folders, copies .env.example to .env, initialises the SQLite database
     and prints a hardware summary. Safe to run again: existing pieces are reused.
@@ -125,12 +125,12 @@ if (-not $pythonCmd) {
 }
 
 # ----------------------------------------------------------------------------- 2. Node.js and npm
-Write-Step 'Checking Node.js (18 or newer) and npm'
+Write-Step 'Checking Node.js (20 or newer) and npm'
 $node = Resolve-Tool @('node.exe', 'node')
 if (-not $node) { Fail 'Node.js was not found. Install the LTS version from https://nodejs.org/ and open a new terminal.' }
 $nodeVer = Get-NativeOutput -FilePath $node -ArgumentList @('--version')
 if (-not ($nodeVer -match '^v(\d+)\.')) { Fail "Could not read the Node.js version from '$node'." }
-if ([int]$Matches[1] -lt 18) { Fail "Node.js $nodeVer is too old. Install Node.js 18 or newer (LTS) from https://nodejs.org/." }
+if ([int]$Matches[1] -lt 20) { Fail "Node.js $nodeVer is too old. Install Node.js 20 or newer (LTS) from https://nodejs.org/." }
 Write-Ok "Node.js $nodeVer"
 # Prefer npm.cmd: it works even where the execution policy blocks npm.ps1.
 $npm = Resolve-Tool @('npm.cmd', 'npm')

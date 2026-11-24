@@ -18,7 +18,7 @@ const Router = IS_DEMO ? MemoryRouter : BrowserRouter;
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+    <Router>
       <AppProvider>
         <App />
       </AppProvider>

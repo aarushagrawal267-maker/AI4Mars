@@ -57,7 +57,7 @@ statistics, and experiment with terrain-aware A\* route planning — all through
 ## Quick start on Windows
 
 **You need:** Windows 10/11, [Python 3.10 or newer](https://www.python.org/downloads/) (tested on 3.12 and 3.13) (tick *“Add python.exe to PATH”*),
-[Node.js 18+ LTS](https://nodejs.org/), [Git](https://git-scm.com/), about 3 GB of free disk for the software plus
+[Node.js 20+ LTS](https://nodejs.org/), [Git](https://git-scm.com/), about 3 GB of free disk for the software plus
 1.5 GB for a 4,000-image dataset subset. An NVIDIA GPU is optional (detected automatically).
 
 Open **PowerShell** in a folder of your choice:
@@ -101,6 +101,13 @@ Playwright browser for end-to-end tests), `-NoDemoModels` (start with no trained
 
 ## Quick start on macOS / Linux
 
+**You need:** Python 3.10 or newer (with the `venv` module; on Debian/Ubuntu `sudo apt install python3-venv`),
+Node.js 20+ LTS, Git and the same free disk space as above.
+
+```bash
+git clone https://github.com/aarushagrawal267-maker/AI4Mars.git && cd AI4Mars
+```
+
 ```bash
 ./setup.sh
 ```
@@ -113,7 +120,7 @@ Playwright browser for end-to-end tests), `-NoDemoModels` (start with no trained
 ./stop.sh
 ```
 
-`setup.sh` takes the same options as `--cpu-only`, `--cuda`, `--with-e2e` and `--no-demo-models`.
+`setup.sh` takes the same options, spelled `--cpu-only`, `--cuda`, `--with-e2e` and `--no-demo-models`; `./start.sh --open` also opens the browser.
 
 ## Manual start (any OS)
 
@@ -151,8 +158,8 @@ An optional `docker compose up` route is described in `docker-compose.yml` (CPU 
 **Full app for free:** [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/aarushagrawal267-maker/AI4Mars?quickstart=1) starts the complete app on a free GitHub cloud machine with a public link ([docs/deploy-free.md](docs/deploy-free.md)); alternatively an Oracle Cloud *Always Free* server (24/7, one command: `deploy/server-setup.sh`) or your own computer with a free Cloudflare Tunnel.
 
 **Streamlit Community Cloud (free):** `streamlit_app/streamlit_app.py` is a Streamlit edition that runs the trained
-models (committed in `deploy/bundle/`) on the server: share.streamlit.io -> Create app -> this repository, branch
-`main`, main file `streamlit_app/streamlit_app.py`. Dependencies come from `streamlit_app/requirements.txt` (CPU PyTorch).
+models (committed in `deploy/bundle/`) on the server: share.streamlit.io -> Create app -> this repository, the branch
+that holds the latest code (`main` once you have merged your work into it), main file `streamlit_app/streamlit_app.py`. Dependencies come from `streamlit_app/requirements.txt` (CPU PyTorch).
 
 **Try it without installing anything:** the *browser edition* runs the trained U-Net and DeepLabV3 inside your web
 browser (WebAssembly via onnxruntime-web), with the real evaluation results, experiments, dataset statistics, 120

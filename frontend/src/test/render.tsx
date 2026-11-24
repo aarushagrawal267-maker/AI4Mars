@@ -6,7 +6,7 @@ import { AppProvider } from '../context/AppContext';
 
 export function renderApp(path = '/') {
   return render(
-    <MemoryRouter initialEntries={[path]} future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+    <MemoryRouter initialEntries={[path]}>
       <AppProvider>
         <App />
       </AppProvider>
@@ -16,7 +16,7 @@ export function renderApp(path = '/') {
 
 export function renderPage(ui: ReactElement, path = '/') {
   return render(
-    <MemoryRouter initialEntries={[path]} future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+    <MemoryRouter initialEntries={[path]}>
       <AppProvider>
         <Routes><Route path="*" element={ui} /></Routes>
       </AppProvider>
