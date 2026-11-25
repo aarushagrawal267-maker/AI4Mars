@@ -262,6 +262,9 @@ and test pixels (0.07 % in `min3`). Consequences:
 - **Not a separate time period.** In this subset, test images span the same spacecraft-clock range as
   the training images, and 31 of them were taken at a rover position that also appears in training.
   The test set therefore measures generalisation to new frames, not necessarily to new terrain.
+  Scoring the baseline models without those 31 images changes mean IoU by at most 0.9 points
+  (`scripts/evaluate_uncertainty.py`). The full MSL training set shares a position with 171 of the
+  322 test images.
 - **Range and rover masking.** Labels exclude terrain beyond about 30 m and the rover itself. Models
   are never supervised on distant terrain or on the sky (there is no sky class), yet they still
   assign one of the four classes to every pixel at inference time, including sky and rover pixels.

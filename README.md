@@ -208,7 +208,7 @@ measures your machine. A CUDA GPU is typically one to two orders of magnitude fa
 
 | Suite | Command | What it covers |
 |-------|---------|----------------|
-| Python (78 tests) | `.venv\Scripts\python -m pytest` | Model shapes, 4-class output, ignore-index loss, checkpoints, inference, metrics vs scikit-learn, dataset validation, range-request download, A\* optimality, every API endpoint, database persistence, a real tiny training run |
+| Python (81 tests) | `.venv\Scripts\python -m pytest` | Model shapes, 4-class output, ignore-index loss, checkpoints, inference, metrics vs scikit-learn, dataset validation, range-request download, A\* optimality, every API endpoint, database persistence, a real tiny training run |
 | Frontend (15 tests) | `cd frontend` then `npm test` | Navigation, upload & validation, API errors, empty states, model selection, training controls, result rendering |
 | End-to-end (3 tests) | `cd frontend` then `npx playwright install chromium` (once) and `npm run e2e` | Uploads an image in a real browser and verifies a valid segmentation; invalid uploads; every page loads |
 
@@ -257,18 +257,43 @@ were produced by the application and are reproducible with the scripts above; pe
   pixels. Class weighting (available in the training page) is the obvious next experiment.
 - **`min1` scores are lower than `min3`.** `min1` labels include pixels where only one of three experts was
   confident; they are larger and contain harder, more ambiguous regions. Report both.
-- **Validation and test agree.** Validation mIoU re-measured at native resolution (62.1 / 73.9) matches the value
-  tracked during training (62.2 / 74.0), and test `min3` is close to validation — no sign of checkpoint-selection
-  overfitting at this scale. DeepLabV3's validation mIoU fluctuated between epochs (64–74 %), so a single run
-  carries noticeable variance; several seeds would be needed for a firm conclusion.
+- **Validation and test.** Validation mIoU re-measured at native resolution (62.1 / 73.9) matches the value
+  tracked at 192 px during training (62.2 / 74.0), so the reduced training-time resolution does not distort it. That
+  is the same set the best epoch was chosen on, so it is optimistic by construction; the test set, never used for
+  selection, is the number to quote. DeepLabV3's validation mIoU swung between 61 and 74 % from epoch to epoch, so
+  a single run carries noticeable variance; several seeds would be needed for a firm conclusion.
 - **Speed** is the median single-image forward pass at 192 px on this CPU; U-Net is faster (21.7 vs 34.0 ms) and
   6× smaller on disk (7.3 vs 44.3 MB).
 - **Limits:** one seed, a 22 % subset of the available training pairs, low resolution and 10 CPU epochs. With a GPU,
   the full 16,064 training pairs and higher resolution, both models should improve. 31 of the 322 test images share
-  a rover position with the training subset (reported by the Dataset Explorer).
+  a rover position with the training subset (reported by the Dataset Explorer); see the leakage check below.
 - **Known failure mode:** pixels the labels never cover (rover hardware, sky, terrain beyond ~30 m) still receive a
   class at inference — e.g. the rover body is often predicted as bedrock. Evaluation ignores those pixels; whole-image
   terrain percentages do not.
+
+**Uncertainty, a trivial baseline and a leakage check** (test set, computed by
+[`scripts/evaluate_uncertainty.py`](scripts/evaluate_uncertainty.py), which re-evaluates the checkpoints with one
+confusion matrix per image; its pooled confusion matrices are identical to the stored evaluations above):
+
+| Test labels | Majority class (soil everywhere): pixel acc. / mIoU | DeepLabV3 mIoU, 95 % CI | U-Net mIoU, 95 % CI | Difference, 95 % CI | mIoU without the 31 shared-position images (DeepLabV3 / U-Net) |
+|---|---:|---:|---:|---:|---:|
+| `min3` | 51.4 / 12.8 | 73.2 (63.8–82.3) | 61.0 (57.8–64.0) | +12.2 (3.0–20.5) | 72.3 / 61.0 |
+| `min1` | 45.9 / 11.5 | 60.1 (56.6–63.9) | 53.9 (51.3–56.2) | +6.2 (3.2–9.8) | 59.8 / 54.2 |
+
+- Intervals are 95 % percentile bootstraps over **images** (2,000 resamples, seed 0; pixels within an image are not
+  independent), and the difference is paired on the same resampled images. They describe uncertainty from the
+  finite test set only, not run-to-run training variance (one seed), which the epoch-to-epoch swings above suggest
+  is several points.
+- **The interval of the difference excludes zero** on both label variants, but the `min3` intervals are wide
+  because of *big rock*: only **5 of the 322 test images contain any `min3` big-rock pixel** (53 images in `min1`),
+  so DeepLabV3's big-rock IoU of 33.8 has a 95 % interval of 1.0–64.5. Without big rock, the 3-class mean IoU on
+  `min3` is 86.3 (DeepLabV3) vs 81.3 (U-Net). Also, 35 of the 322 images have no `min3`-labelled pixel at all and
+  do not contribute to the `min3` scores.
+- **Leakage check:** removing the 31 test images taken at a rover position that also occurs in the downloaded
+  training subset changes mIoU by at most 0.9 points, so the overlap does not explain the results. (On their own,
+  those 31 images score lower than the rest on `min1`; on `min3` they score higher, but none of them contains big
+  rock, so their mean covers only three classes.) Note that the *full* training set shares a position with
+  171 of the 322 test images, so a model trained on all of it should be checked the same way.
 <!-- RESULTS:END -->
 
 ---
@@ -289,7 +314,8 @@ AI4Mars/
 ├── frontend/            React + TypeScript + Vite + Tailwind + Recharts (src/pages, components, charts, services, …)
 ├── tests/               pytest suites (ml/, backend/)
 ├── scripts/             download_dataset.py, run_baseline_experiments.py, seed_demo_models.py (install the
-│                        pre-trained models), results_table.py, export_web_demo.py, deploy_*.py
+│                        pre-trained models), results_table.py, evaluate_uncertainty.py (confidence
+│                        intervals, baseline, leakage check), export_web_demo.py, deploy_*.py
 ├── deploy/              Dockerfiles, server/Codespace start scripts and bundle/ (trained checkpoints, results
 │                        database and the 322-image expert test split used by setup and hosted demos)
 ├── streamlit_app/       Streamlit edition (runs the bundled models; for Streamlit Community Cloud)

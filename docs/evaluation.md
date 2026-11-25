@@ -59,6 +59,31 @@ Because the mean weights classes equally, the rare *big rock* class has as much 
 as *soil*, although it covers well under 1 % of the test pixels. Read the per-class values alongside
 the means.
 
+## Confidence intervals, baseline and leakage check
+
+The app reports point values. `scripts/evaluate_uncertainty.py` re-evaluates trained checkpoints on the
+test set with the same procedure, but keeps one confusion matrix per image, and reports:
+
+- 95 % **image-level bootstrap** intervals (percentile, 2,000 resamples by default) for mean IoU and
+  per-class IoU, and a **paired** interval for the mean-IoU difference between models. Images, not
+  pixels, are resampled because neighbouring pixels are strongly correlated. The intervals reflect the
+  finite test set only, not training variance across seeds.
+- a **majority-class baseline**: every labelled pixel predicted as the most frequent class (soil on the
+  test set: pixel accuracy 51.4 % and mean IoU 12.8 % on `min3`). Pixel accuracy should be read against
+  it;
+- scores on the test images whose rover position does **not** occur in the training data, and on those
+  that do;
+- whether its pooled confusion matrices match the stored evaluations (`--compare-db`).
+
+```bash
+.venv/bin/python scripts/evaluate_uncertainty.py --compare-db                       # index with training records
+.venv/bin/python scripts/evaluate_uncertainty.py --zenodo-subset 4000 --compare-db   # demo bundle
+```
+
+The demo bundle's index has only the test split, so `--zenodo-subset N` rebuilds the training
+positions that a subset download with `train_count=N` selects, from the archive's file directory on
+Zenodo. Results for the baseline models are in the README.
+
 ## Timing and model size
 
 - **Forward-pass time:** measured for each image around the model call only (with CUDA

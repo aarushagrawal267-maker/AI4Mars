@@ -25,15 +25,21 @@ known limitations of the data, the models, the evaluation and the software.
   pixels, so its scores are noisy and it is the class most likely to be missed.
 - **Test-set overlap by position.** 31 of the 322 test images were taken at a rover position that
   also appears in the downloaded training subset. This is reported, not removed, to keep the official
-  split; scores on the remaining images alone are not computed separately.
+  split. `scripts/evaluate_uncertainty.py` scores the other 291 images separately: for the baseline
+  models mean IoU changes by at most 0.9 points. With the *full* MSL training set the overlap grows to
+  171 of 322 test images, so a model trained on all of it needs the same check.
+- **Few big-rock test images.** Only 5 of the 322 test images contain any big-rock pixel in the
+  `min3` labels (53 in `min1`), so the `min3` big-rock IoU, and with it `min3` mean IoU, has a very
+  wide confidence interval (see the README Results section).
 
 ## Models and training
 
 - **Limited compute.** CPU defaults use small resolutions (192 px), few epochs and a training subset.
   Models may be far from converged; architecture rankings could change with longer training or
   higher resolution.
-- **Single seed.** Experiments are typically run once per configuration; there are no confidence
-  intervals or significance tests, so small differences between models are not meaningful.
+- **Single seed.** Experiments are typically run once per configuration, so run-to-run training
+  variance is unknown. The image-level bootstrap intervals in the README cover only the finite test
+  set; small differences between models are not meaningful.
 - **Pretrained vs from scratch.** DeepLabV3 uses COCO-pretrained weights by default while U-Net is
   trained from scratch; this difference is part of the comparison, not controlled for.
 - **No hyper-parameter search.** Learning rate, loss weights and augmentation are fixed defaults,
@@ -83,7 +89,6 @@ known limitations of the data, the models, the evaluation and the software.
 ## Future work
 
 - Repeat experiments with several seeds and report mean and spread.
-- Report test scores separately for test images that do not share a rover position with training.
 - Train on the full MSL NavCam training set at higher resolution on a GPU.
 - Measure calibration (reliability diagrams, expected calibration error) and try temperature scaling.
 - Add epistemic uncertainty (deep ensembles or Monte Carlo dropout) and compare it with errors.
