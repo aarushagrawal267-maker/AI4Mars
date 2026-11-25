@@ -40,7 +40,9 @@ Public demo mode: browse results, analyse images and plan routes; training and e
 Source: https://github.com/aarushagrawal267-maker/AI4Mars
 """
 SKIP = shutil.ignore_patterns("__pycache__", "*.pyc", "node_modules", "dist", "dist-demo", "public-demo",
-                              "test-results", "playwright-report", ".vite")
+                              "test-results", "playwright-report", ".vite",
+                              # local secrets: never upload them to a (public) Space
+                              ".env", ".env.*", "*.pem", "*.key", "admin_token.txt", ".mti_admin_token")
 
 
 def stage() -> Path:
