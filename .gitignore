@@ -1,5 +1,8 @@
 # Python
 .venv/
+venv/
+env/
+.python-version
 __pycache__/
 *.pyc
 .pytest_cache/
@@ -27,6 +30,8 @@ experiments/*
 
 # Runtime
 .env
+.env.*
+!.env.example
 .run/
 *.log
 .DS_Store
@@ -46,3 +51,22 @@ deploy/hf-space/
 deploy/bundle/**/*.sqlite3-*
 deploy/hf-static/
 .mti_admin_token
+
+# Credentials and local secrets (never committed)
+.streamlit/secrets.toml
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa*
+id_ed25519*
+.netrc
+.huggingface/
+credentials.json
+service-account*.json
+
+# Data dumps outside data/ (the demo bundle above stays tracked)
+*.sqlite
+*.db
+*.dump
+*.sql.gz

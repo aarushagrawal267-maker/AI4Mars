@@ -14,3 +14,9 @@ frontend/node_modules
 frontend/dist
 frontend/test-results
 frontend/playwright-report
+# Local secrets: never baked into an image layer
+**/.env
+**/.env.*
+.mti_admin_token
+deploy/admin_token.txt
+.streamlit/secrets.toml
