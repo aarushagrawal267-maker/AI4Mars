@@ -208,7 +208,7 @@ measures your machine. A CUDA GPU is typically one to two orders of magnitude fa
 
 | Suite | Command | What it covers |
 |-------|---------|----------------|
-| Python (81 tests) | `.venv\Scripts\python -m pytest` | Model shapes, 4-class output, ignore-index loss, checkpoints, inference, metrics vs scikit-learn, dataset validation, range-request download, A\* optimality, every API endpoint, database persistence, a real tiny training run |
+| Python (82 tests) | `.venv\Scripts\python -m pytest` | Model shapes, 4-class output, ignore-index loss, checkpoints, inference, metrics vs scikit-learn, dataset validation, range-request download, A\* optimality, every API endpoint, database persistence, a real tiny training run |
 | Frontend (15 tests) | `cd frontend` then `npm test` | Navigation, upload & validation, API errors, empty states, model selection, training controls, result rendering |
 | End-to-end (3 tests) | `cd frontend` then `npx playwright install chromium` (once) and `npm run e2e` | Uploads an image in a real browser and verifies a valid segmentation; invalid uploads; every page loads |
 

@@ -17,7 +17,7 @@ connection and no downloaded dataset: it builds a small **synthetic** dataset in
 (`tests/conftest.py`), laid out exactly like the real AI4Mars v0.6 archive (`msl/ncam/images/edr`,
 `labels/train`, `labels/test/masked-gold-min1|min3-100agree`, `label_keys.json`). Its tiny generated
 images are never presented as real data. API tests run against an isolated app instance with a
-temporary data, checkpoint and experiments directory. 81 tests currently pass (including the demo-model seeder in `tests/backend/test_seed_demo_models.py`).
+temporary data, checkpoint and experiments directory. 82 tests currently pass (including the demo-model seeder in `tests/backend/test_seed_demo_models.py`).
 
 The default application in `backend/app/main.py` is created lazily (only when uvicorn asks for
 `backend.app.main:app`), so running the suite never opens your real `data/` folder or database.

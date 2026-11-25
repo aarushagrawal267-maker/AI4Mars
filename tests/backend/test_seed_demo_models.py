@@ -58,7 +58,7 @@ def test_seeds_empty_install_and_never_overwrites(tmp_path):
     assert mod.seed(data, ck, ex, bundle=bundle)["status"] == "skipped"
     # --force adds missing files but keeps the user's files and database
     r = mod.seed(data, ck, ex, bundle=bundle, force=True)
-    assert r["status"] == "copied" and r["database"] == "kept"
+    assert r["status"] == "copied" and r["database"].startswith("kept")
     assert (ck / "unet-x" / "best.pt").read_bytes() == b"my own training"
 
 
@@ -87,3 +87,34 @@ def test_real_bundle_gives_working_models_and_prediction(tmp_path):
         assert r.status_code == 200, r.text
         body = r.json()
         assert body.get("id") or body.get("analysis_id")
+
+
+def test_force_adds_the_bundled_models_to_a_database_with_your_own_work(tmp_path):
+    """--force must make the bundled models usable next to the user's: the app lists only models with a DB row."""
+    mod = _load()
+    data, ck, ex = tmp_path / "data", tmp_path / "ck", tmp_path / "ex"
+    settings = Settings(data_dir=data, checkpoint_dir=ck, experiments_dir=ex, enable_test_fixture=True,
+                        _env_file=None)
+    with TestClient(create_app(settings)) as c:  # the user's own install: one trained model with an evaluation
+        own = [m["id"] for m in c.get("/api/models").json()["models"]]
+    assert len(own) == 1  # the test fixture model stands in for the user's own training
+    with sqlite3.connect(data / "mti.sqlite3") as con:
+        con.execute("INSERT INTO evaluations (experiment_id, created_at, split, label_variant, images, metrics) "
+                    "VALUES (?, '2026-01-01 00:00:00', 'test', 'min3', 1, '{}')", (own[0],))
+        own_evals = con.execute("SELECT COUNT(*) FROM evaluations").fetchone()[0]
+    assert mod.seed(data, ck, ex)["status"] == "skipped"
+
+    r = mod.seed(data, ck, ex, force=True)
+    assert r["database"].startswith("kept, ") and "added" in r["database"], r
+    with TestClient(create_app(settings)) as c:
+        ids = [m["id"] for m in c.get("/api/models").json()["models"]]
+    assert own[0] in ids
+    assert any(i.startswith("unet") for i in ids) and any(i.startswith("deeplabv3") for i in ids)
+    with sqlite3.connect(data / "mti.sqlite3") as con:
+        assert con.execute("SELECT COUNT(*) FROM evaluations").fetchone()[0] > own_evals
+        assert con.execute("SELECT COUNT(*) FROM evaluations WHERE experiment_id = ?", (own[0],)).fetchone()[0] == 1
+        n_exp = con.execute("SELECT COUNT(*) FROM experiments").fetchone()[0]
+    # running it again adds nothing twice
+    assert mod.seed(data, ck, ex, force=True)["database"] == "kept (it already has the bundled models)"
+    with sqlite3.connect(data / "mti.sqlite3") as con:
+        assert con.execute("SELECT COUNT(*) FROM experiments").fetchone()[0] == n_exp

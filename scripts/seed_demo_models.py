@@ -10,12 +10,13 @@ already ships in ``deploy/bundle``:
 * the official AI4Mars expert-labelled test split (322 images + labels) and its dataset index.
 
 so the app is usable immediately. It never overwrites your own work: if a trained checkpoint or a database
-with experiments already exists it does nothing (use ``--force`` to copy anyway; existing files are kept).
+with experiments already exists it does nothing (use ``--force`` to add the bundled models anyway: existing files
+are kept, and the bundled experiments are added to your database next to your own).
 
 Usage (from the repository root, inside the virtual environment)::
 
     python scripts/seed_demo_models.py            # copy only if you have no trained model yet
-    python scripts/seed_demo_models.py --force    # copy missing files even if you already have models
+    python scripts/seed_demo_models.py --force    # add the bundled models even if you already have your own
     python scripts/seed_demo_models.py --check    # report what would happen, change nothing
 """
 from __future__ import annotations
@@ -48,6 +49,44 @@ def _db_has_work(db_path: Path) -> bool:
     except sqlite3.DatabaseError:
         return True  # unreadable database: do not touch it
     return False
+
+
+def _merge_bundled_rows(db_path: Path, bundle_db: Path) -> str:
+    """Add the bundle's experiments (and their evaluations and example analyses) to an existing database.
+
+    Only experiments whose id is not in the database yet are added, so the user's rows are never changed and running
+    it again adds nothing twice. Evaluation ids are left to the database (they are autoincrement integers that would
+    collide with the user's). Returns a short description for the summary.
+    """
+    con = None
+    try:
+        con = sqlite3.connect(db_path)
+        with con:  # one transaction: all rows are added, or none
+            con.execute("ATTACH DATABASE ? AS bundle", (str(bundle_db),))
+
+            def columns(table: str) -> list[str]:
+                mine = [r[1] for r in con.execute(f"PRAGMA main.table_info({table})")]
+                theirs = {r[1] for r in con.execute(f"PRAGMA bundle.table_info({table})")}
+                return [c for c in mine if c in theirs]
+
+            new_ids = [r[0] for r in con.execute(
+                "SELECT id FROM bundle.experiments WHERE id NOT IN (SELECT id FROM main.experiments)")]
+            if not new_ids:
+                return "kept (it already has the bundled models)"
+            marks = ",".join("?" * len(new_ids))
+            for table, key, skip in (("experiments", "id", ()), ("evaluations", "experiment_id", ("id",)),
+                                     ("analyses", "experiment_id", ())):
+                cols = ",".join(f'"{c}"' for c in columns(table) if c not in skip)
+                if not cols:  # table missing in either database
+                    continue
+                con.execute(f"INSERT OR IGNORE INTO main.{table} ({cols}) SELECT {cols} FROM bundle.{table} "
+                            f"WHERE {key} IN ({marks})", new_ids)
+        return f"kept, {len(new_ids)} bundled model(s) added to it"
+    except sqlite3.DatabaseError as exc:
+        return f"kept (the bundled models could not be added to it: {exc})"
+    finally:
+        if con is not None:
+            con.close()
 
 
 def _copy_tree(src: Path, dst: Path) -> int:
@@ -88,7 +127,8 @@ def seed(data_dir: Path, checkpoint_dir: Path, experiments_dir: Path, database_u
     summary["checkpoints"] = _copy_tree(bundle / "checkpoints", checkpoint_dir)
     summary["experiments"] = _copy_tree(bundle / "experiments", experiments_dir)
 
-    # The database: replace the EMPTY one setup creates; never replace one that holds results.
+    # The database: replace the EMPTY one setup creates; never replace one that holds results. With --force the
+    # bundled models are added to it instead, because the app only lists models that have a database row.
     if custom_db:
         summary["database"] = "skipped (MTI_DATABASE_URL points to another database)"
     elif not _db_has_work(db_path):
@@ -97,6 +137,8 @@ def seed(data_dir: Path, checkpoint_dir: Path, experiments_dir: Path, database_u
         db_path.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(bundle / "data" / DB_NAME, db_path)
         summary["database"] = "installed"
+    else:
+        summary["database"] = _merge_bundled_rows(db_path, bundle / "data" / DB_NAME)
 
     # Test images, labels, dataset index and the example analyses (never overwrites existing files).
     for path in sorted((bundle / "data").iterdir()):
