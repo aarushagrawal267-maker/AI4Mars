@@ -6,6 +6,7 @@ from typing import Literal
 
 import numpy as np
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, Response, UploadFile
+from fastapi.concurrency import run_in_threadpool
 
 from ml.preprocessing.transforms import ImageValidationError, decode_upload
 
@@ -34,18 +35,21 @@ async def predict(model_id: str = Form(..., max_length=64), file: UploadFile | N
         if len(data) > limit:
             raise HTTPException(413, f"File is larger than the {ctx.settings.max_upload_mb} MB upload limit.")
         try:
-            rgb = np.asarray(decode_upload(data))
+            rgb = np.asarray(await run_in_threadpool(decode_upload, data))
         except ImageValidationError as exc:
             raise HTTPException(400, str(exc)) from exc
         source = "upload"
     else:
         try:
-            gray = ctx.dataset.image_array(sample_id)
+            gray = await run_in_threadpool(ctx.dataset.image_array, sample_id)
         except (KeyError, LookupError) as exc:
             raise HTTPException(404, "Unknown dataset sample.") from exc
         rgb, name, source = np.repeat(gray[:, :, None], 3, axis=2), f"{sample_id}.JPG", "dataset"
+    # Decoding, checkpoint loading and the forward pass are blocking CPU work, and the forward pass
+    # waits for the shared inference lock (held for minutes by a running evaluation). Running them in
+    # the thread pool keeps the event loop, and so every other endpoint, responsive meanwhile.
     try:
-        return ctx.inference.analyze(rgb, model_id, name, source, sample_id)
+        return await run_in_threadpool(ctx.inference.analyze, rgb, model_id, name, source, sample_id)
     except ModelNotAvailable as exc:
         raise HTTPException(404, str(exc)) from exc
     except MemoryError as exc:

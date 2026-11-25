@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import io
 import json
+import time
 
 import numpy as np
 import pytest
@@ -153,6 +154,49 @@ def test_prediction_response_and_output_dimensions(client):
     assert client.get("/api/analyses").json()["analyses"][0]["id"] == a["id"]
     assert client.delete(f"/api/analyses/{a['id']}").status_code == 200
     assert client.get(f"/api/analyses/{a['id']}").status_code == 404
+
+
+def test_server_stays_responsive_while_a_prediction_waits_for_the_model(client):
+    """A running evaluation holds the inference lock for minutes. A prediction queued behind it must
+    wait in a worker thread, not in the event loop, or every other endpoint would freeze meanwhile."""
+    import threading
+
+    lock = client.app.state.ctx.registry.inference_lock
+    results: dict = {}
+    lock.acquire()  # stand-in for an evaluation in progress
+    try:
+        pred = threading.Thread(target=lambda: results.setdefault("predict", upload(client, png_bytes())))
+        pred.start()
+        time.sleep(0.5)  # let the prediction reach the lock
+        health = threading.Thread(target=lambda: results.setdefault("health", client.get("/api/health")))
+        health.start()
+        health.join(timeout=10)
+        assert not health.is_alive(), "the event loop was blocked by a prediction waiting for the model"
+        assert results["health"].status_code == 200
+        assert "predict" not in results  # still queued behind the lock
+    finally:
+        lock.release()
+    pred.join(timeout=60)
+    assert results["predict"].status_code == 200, results["predict"].text
+
+
+def test_missing_or_corrupt_checkpoint_gives_a_clear_error(client):
+    reg = client.app.state.ctx.registry
+    path = reg.checkpoint_path(FIXTURE_ID)
+    good = path.read_bytes()
+    try:
+        path.write_bytes(b"not a torch checkpoint")
+        reg.forget(FIXTURE_ID)
+        r = upload(client, png_bytes())
+        assert r.status_code == 404 and "could not be loaded" in r.json()["detail"]
+        path.unlink()
+        r = upload(client, png_bytes())
+        assert r.status_code == 404 and "no saved checkpoint" in r.json()["detail"]
+        assert FIXTURE_ID not in [m["id"] for m in client.get("/api/models").json()["models"]]
+    finally:
+        path.write_bytes(good)
+        reg.forget(FIXTURE_ID)
+    assert upload(client, png_bytes()).status_code == 200
 
 
 def test_predict_from_dataset_sample_and_jpeg(loaded_client):

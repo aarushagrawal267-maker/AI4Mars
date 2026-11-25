@@ -234,6 +234,25 @@ def test_index_save_load_and_cache(synthetic_dataset, tmp_path):
         ensure_cache(idx, synthetic_dataset["raw_root"], tmp_path / "processed", 128, "test")
 
 
+def test_augmentation_differs_across_loader_workers_and_epochs_but_is_reproducible():
+    from torch.utils.data import DataLoader
+
+    # identical samples, so any difference between outputs comes from augmentation alone
+    images = np.tile((np.arange(64, dtype=np.uint8) * 3)[None, None, :], (8, 64, 1))
+    labels = np.tile((np.arange(64) // 16).astype(np.uint8)[None, None, :], (8, 64, 1))
+    ds = TerrainDataset(images, labels, augment=True, seed=42)
+
+    def two_epochs() -> list[list[bytes]]:
+        loader = DataLoader(ds, batch_size=1, num_workers=2, generator=torch.Generator().manual_seed(42))
+        return [[x.numpy().tobytes() for x, _ in loader] for _ in range(2)]
+
+    run = two_epochs()
+    # Worker 0 serves samples 0, 2, 4, 6 and worker 1 serves 1, 3, 5, 7. With a shared RNG they matched pairwise.
+    assert run[0][0::2] != run[0][1::2]
+    assert run[0] != run[1]          # a new epoch draws new augmentations
+    assert run == two_epochs()       # and a seeded run is still reproducible
+
+
 # ------------------------------------------------------------------ training
 def test_train_config_validation():
     assert TrainConfig.from_dict({"arch": "unet", "epochs": 2}).model_config["base_channels"] == 32
