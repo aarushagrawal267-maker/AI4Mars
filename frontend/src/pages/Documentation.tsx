@@ -23,8 +23,8 @@ const SECTIONS = [
 function Section({ id, title, children }: { id: string; title: string; children: ReactNode }) {
   return (
     <section id={id} className="scroll-mt-20 border-b border-line/60 pb-10 pt-2 last:border-0">
-      <h2 className="mb-4 text-xl font-semibold text-ink">{title}</h2>
-      <div className="space-y-3 text-sm leading-relaxed text-ink-2 [&_b]:font-medium [&_b]:text-ink [&_code]:rounded [&_code]:bg-sunken [&_code]:px-1 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-[12px] [&_code]:text-ink [&_li]:ml-5 [&_li]:list-disc [&_li]:pl-1">
+      <h2 className="mb-4 text-xl font-medium text-ink">{title}</h2>
+      <div className="space-y-3 text-sm leading-relaxed text-ink-2 [&_b]:font-medium [&_b]:text-ink [&_code]:rounded [&_code]:bg-sunken [&_code]:px-1 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-xs [&_code]:text-ink [&_li]:ml-5 [&_li]:list-disc [&_li]:pl-1">
         {children}
       </div>
     </section>
@@ -34,7 +34,7 @@ function Section({ id, title, children }: { id: string; title: string; children:
 function Box({ title, items, accent }: { title: string; items: string[]; accent?: boolean }) {
   return (
     <div className={`rounded-lg border p-3 ${accent ? 'border-accent/50 bg-accent/[0.05]' : 'border-line bg-sunken/60'}`}>
-      <div className="mb-1.5 font-mono text-2xs uppercase tracking-wider text-ink-3">{title}</div>
+      <div className="mb-2 font-mono text-2xs text-ink-3">{title}</div>
       <ul className="space-y-0.5 text-xs text-ink-2">{items.map((i) => <li key={i} className="!ml-0 !list-none !pl-0">{i}</li>)}</ul>
     </div>
   );
@@ -74,12 +74,12 @@ const A = ({ href, children }: { href: string; children: ReactNode }) => (
 export default function Documentation() {
   return (
     <div>
-      <PageHeader eyebrow="09 · reference" title="Documentation"
+      <PageHeader eyebrow="09 · Reference" title="Documentation"
         description="How the system works, what it assumes, and where it falls short. The repository's docs/ folder contains the long-form versions of these sections." />
       <div className="grid gap-10 xl:grid-cols-[220px_1fr]">
         <nav className="hidden xl:block" aria-label="Documentation sections">
           <div className="sticky top-20 space-y-0.5">
-            <div className="eyebrow mb-2 flex items-center gap-1.5"><BookOpen className="h-3 w-3" /> contents</div>
+            <div className="eyebrow mb-2 flex items-center gap-1.5"><BookOpen className="h-3 w-3" /> Contents</div>
             {SECTIONS.map(([id, label], i) => (
               <a key={id} href={`#${id}`} className="flex gap-2 rounded-md px-2 py-1.5 text-xs text-ink-2 hover:bg-raised hover:text-ink">
                 <span className="num text-ink-3">{String(i + 1).padStart(2, '0')}</span>{label}

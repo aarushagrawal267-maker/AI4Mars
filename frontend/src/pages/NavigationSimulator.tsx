@@ -159,7 +159,7 @@ export default function NavigationSimulator() {
                           <td className="num text-right text-ink-2">{fixed(r.mean_cost_per_unit, 2)}</td>
                           <td className="num text-right text-ink-2">{r.steps}</td>
                           <td>{r.composition && <CompositionBar percent={r.composition} height={8} />}
-                            <div className="num mt-1 text-[10px] text-ink-3">{r.composition && CLASS_KEYS.filter((k) => r.composition![k] > 0).map((k) => `${CLASS_LABEL[k]} ${r.composition![k].toFixed(0)}%`).join(' · ')}</div></td>
+                            <div className="num mt-1 text-2xs text-ink-3">{r.composition && CLASS_KEYS.filter((k) => r.composition![k] > 0).map((k) => `${CLASS_LABEL[k]} ${r.composition![k].toFixed(0)}%`).join(' · ')}</div></td>
                           <td className="num text-right text-ink-3">{int(r.expanded_nodes)}</td>
                         </tr>
                       ))}
@@ -173,7 +173,7 @@ export default function NavigationSimulator() {
         </div>
 
         <div className="space-y-6">
-          <Panel title="Terrain movement costs" icon={PaintBucket} eyebrow="experimental assumptions"
+          <Panel title="Terrain movement costs" icon={PaintBucket} eyebrow="Experimental assumptions"
             actions={<>
               <button className="btn-ghost p-1.5" title="Reset to defaults" onClick={async () => { const r = await api.resetCosts(); setCosts(r.costs); setSaved(false); }}><RotateCcw className="h-3.5 w-3.5" /></button>
               <button className="btn-ghost text-xs" disabled={!costs} onClick={async () => { if (costs) { await api.saveCosts(costs); setSaved(true); } }}><Save className="h-3.5 w-3.5" /> {saved ? 'Saved' : 'Save'}</button>
@@ -225,7 +225,7 @@ export default function NavigationSimulator() {
 
 function Header() {
   return (
-    <PageHeader eyebrow="07 · simulation" title="Navigation Simulator"
+    <PageHeader eyebrow="07 · Simulation" title="Navigation Simulator"
       description="Terrain-aware A* route planning over a segmentation result. Set a start and a destination, paint restricted areas, change the assumed movement costs, and compare the resulting routes." />
   );
 }
@@ -387,7 +387,7 @@ function GridCanvas({ grid, analysisId, start, goal, blocked, result, showTerrai
         onPointerUp={() => (down.current = false)}
         onPointerLeave={() => { setHover(null); down.current = false; }} />
       {hover && (
-        <div className="pointer-events-none absolute left-1/2 top-2 -translate-x-1/2 rounded-md border border-white/10 bg-black/75 px-2 py-1 font-mono text-[11px] text-white">
+        <div className="pointer-events-none absolute left-1/2 top-2 -translate-x-1/2 rounded-md border border-white/10 bg-black/75 px-2 py-1 font-mono text-2xs text-white">
           [{hover[0]}, {hover[1]}] · {hoverCls !== null && hoverCls >= 0 ? CLASS_LABEL[CLASS_KEYS[hoverCls]] : 'no prediction'}
           {grid.uncertainty && ` · entropy ${grid.uncertainty[hover[0]][hover[1]].toFixed(2)}`}
           {blocked.has(`${hover[0]},${hover[1]}`) && ' · restricted'}
