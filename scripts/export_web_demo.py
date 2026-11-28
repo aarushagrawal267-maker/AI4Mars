@@ -10,6 +10,7 @@ Writes, under ``--out`` (served next to the static build):
   demo/models/*.txt      the trained models as ONNX, Base64-encoded in parts of <= 14 MB (the page host serves
                          text but not arbitrary binary files); models.json lists the parts
   ort/                   onnxruntime-web 1.17.3 (script + WebAssembly), copied from its npm package
+  favicon.svg            the site icon from frontend/public (the browser edition uses this folder as its public dir)
 Nothing is computed for display here except image resizing: every number comes from the stored results.
 """
 from __future__ import annotations
@@ -185,6 +186,7 @@ def main() -> None:
     samples = export_samples(out, index, a.samples)
     export_data(out, index, models, len(samples))
     export_ort(out)
+    shutil.copy2(ROOT / "frontend" / "public" / "favicon.svg", out / "favicon.svg")
     size = sum(p.stat().st_size for p in out.rglob("*") if p.is_file())
     print(f"wrote {out} ({size / 1e6:.0f} MB)")
 

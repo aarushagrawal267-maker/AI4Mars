@@ -53,7 +53,9 @@ def main() -> None:
 
     api = HfApi(token=os.environ.get("HF_TOKEN") or None)
     api.create_repo(a.space, repo_type="space", space_sdk="static", exist_ok=True)
-    api.upload_folder(repo_id=a.space, repo_type="space", folder_path=str(stage), commit_message="Publish browser edition")
+    # delete_patterns: files of an earlier build that are not in this one (old hashed bundles) are removed.
+    api.upload_folder(repo_id=a.space, repo_type="space", folder_path=str(stage), commit_message="Publish browser edition",
+                      delete_patterns=["*"])
     owner, name = a.space.split("/", 1)
     print(f"Space page: https://huggingface.co/spaces/{a.space}")
     print(f"App URL:    https://{owner.lower()}-{name.lower().replace('_', '-').replace('.', '-')}.static.hf.space")
