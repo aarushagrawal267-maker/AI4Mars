@@ -175,8 +175,7 @@ for Render (Standard plan, 2 GB RAM needed) or use `scripts/deploy_hf_space.py` 
 
 ## Your first session, step by step
 
-**Just want to see it work?** Setup already installed the two trained models (plus a U-Net run that was stopped
-after one epoch, kept as an example of an interrupted experiment), so open *Image Analysis*, pick
+**Just want to see it work?** Setup already installed the two trained models, so open *Image Analysis*, pick
 *Dataset test image* and click one of the thumbnails (or upload a rover photo), choose a model and click **Run analysis**; then look at *Model
 Evaluation*, *Experiments*, *Terrain Intelligence* and the *Navigation Simulator*. No download or training needed.
 (Installed setup without them? Run `python scripts/seed_demo_models.py` at any time; it never overwrites your own
