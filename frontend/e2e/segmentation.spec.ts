@@ -89,7 +89,7 @@ test('invalid uploads are rejected with a clear message', async ({ page }) => {
 test('every page loads without errors', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', (e) => errors.push(e.message));
-  for (const [path, title] of [['/', 'Pixel-level terrain intelligence'], ['/dataset', 'Dataset Explorer'], ['/training', 'Model Training'],
+  for (const [path, title] of [['/', 'Segment Mars rover images'], ['/dataset', 'Dataset Explorer'], ['/training', 'Model Training'],
     ['/evaluation', 'Model Evaluation'], ['/terrain', 'Terrain Intelligence'], ['/navigation', 'Navigation Simulator'],
     ['/experiments', 'Experiments'], ['/docs', 'Documentation'], ['/settings', 'Settings']]) {
     await page.goto(path);

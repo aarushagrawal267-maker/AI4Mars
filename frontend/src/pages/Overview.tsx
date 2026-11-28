@@ -1,26 +1,28 @@
 import {
-  ArrowRight, BrainCircuit, CheckCircle2, Circle, Cpu, Database, Gauge, Loader2, Map, Mountain, ScanSearch, Sparkles,
+  ArrowRight, BrainCircuit, CheckCircle2, Circle, Cpu, Database, Gauge, ListChecks, Loader2, Map, Mountain, ScanSearch,
 } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { CompositionBar, EmptyState, ErrorBanner, Loading, Panel, ProgressBar, Stat, StatusBadge } from '../components/ui';
+import { ClassLegend, CompositionBar, EmptyState, ErrorBanner, Loading, Panel, ProgressBar, Segmented, Stat, StatusBadge } from '../components/ui';
 import { AnalysisThumb, ModelCard } from '../components/shared';
 import { useApp } from '../context/AppContext';
 import { useRemote } from '../hooks/usePolling';
 import { api } from '../services/api';
-import { ago, archLabel, CLASS_LABEL, cx, duration, int, ratio } from '../utils/format';
+import type { ClassKey } from '../types/api';
+import { ago, archLabel, CLASS_KEYS, CLASS_LABEL, cx, duration, int, ratio } from '../utils/format';
 
 function Step({ n, title, done, active, to, detail, icon: Icon }: {
   n: number; title: string; done: boolean; active?: boolean; to: string; detail: string; icon: typeof Database;
 }) {
   return (
-    <Link to={to} className={cx('group relative flex min-w-0 flex-1 flex-col rounded-lg border p-3 transition-colors',
+    <Link to={to} className={cx('group relative flex min-w-0 flex-1 flex-col rounded-lg border p-4 transition-colors',
       done ? 'border-good/30 bg-good/[0.05]' : active ? 'border-accent/50 bg-accent/[0.06]' : 'border-line bg-sunken/50 hover:border-line-strong')}>
       <div className="flex items-center justify-between">
-        <span className="num text-2xs text-ink-3">STEP {String(n).padStart(2, '0')}</span>
+        <span className="num text-2xs text-ink-3">Step {String(n).padStart(2, '0')}</span>
         {done ? <CheckCircle2 className="h-4 w-4 text-good" /> : active ? <Loader2 className="h-4 w-4 animate-spin text-accent" /> : <Circle className="h-4 w-4 text-ink-3" />}
       </div>
       <div className="mt-2 flex items-center gap-2 text-sm font-medium text-ink">
-        <Icon className="h-4 w-4 text-ink-3 group-hover:text-accent" strokeWidth={1.75} /> {title}
+        <Icon className="h-4 w-4 text-ink-3 group-hover:text-ink-2" strokeWidth={1.5} /> {title}
       </div>
       <div className="mt-1 text-2xs leading-snug text-ink-3">{detail}</div>
     </Link>
@@ -62,7 +64,7 @@ export default function Overview() {
     <div className="space-y-6">
       <Hero latestId={d.latest_analysis?.id} latestName={d.latest_analysis?.filename} latestFixture={d.latest_analysis?.is_fixture} />
 
-      <Panel title="Research pipeline" eyebrow="mission checklist" icon={Sparkles}>
+      <Panel title="Research pipeline" eyebrow="Mission checklist" icon={ListChecks}>
         <div className="flex flex-col gap-2 md:flex-row">
           {steps.map((s, i) => <Step key={s.title} n={i + 1} {...s} />)}
         </div>
@@ -165,52 +167,108 @@ export default function Overview() {
   );
 }
 
+/** A real prediction bundled with the app: DeepLabV3 on a held-out AI4Mars test frame (Curiosity NavCam). */
+const SAMPLE = {
+  frame: 'NLA_409036068EDR',
+  image: `${import.meta.env.BASE_URL}samples/navcam-NLA_409036068.jpg`,
+  classes: `${import.meta.env.BASE_URL}samples/navcam-NLA_409036068-classes.png`,
+  percent: { soil: 0, bedrock: 68.4, sand: 15.5, big_rock: 16.1 } as Record<ClassKey, number>,
+};
+
+function hexRgb(hex: string): [number, number, number] {
+  const n = parseInt(hex.replace('#', ''), 16);
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+}
+
+/** Draws the bundled NavCam frame with its class map blended on top, in the user's class colours. */
+function SampleOverlay({ showMask }: { showMask: boolean }) {
+  const { colors } = useApp();
+  const canvas = useRef<HTMLCanvasElement>(null);
+  useEffect(() => {
+    let alive = true;
+    const load = (src: string) => new Promise<HTMLImageElement>((res, rej) => {
+      const img = new Image(); img.onload = () => res(img); img.onerror = rej; img.src = src;
+    });
+    Promise.all([load(SAMPLE.image), load(SAMPLE.classes)]).then(([img, cls]) => {
+      const c = canvas.current;
+      if (!alive || !c) return;
+      const w = img.naturalWidth, h = img.naturalHeight;
+      c.width = w; c.height = h;
+      const ctx = c.getContext('2d');
+      if (!ctx) return;
+      ctx.drawImage(img, 0, 0);
+      if (!showMask) return;
+      const base = ctx.getImageData(0, 0, w, h);
+      const tmp = document.createElement('canvas'); tmp.width = w; tmp.height = h;
+      const tctx = tmp.getContext('2d');
+      if (!tctx) return;
+      tctx.drawImage(cls, 0, 0, w, h);
+      const ids = tctx.getImageData(0, 0, w, h).data;
+      const pal = CLASS_KEYS.map((k) => hexRgb(colors[k]));
+      const px = base.data;
+      for (let i = 0; i < px.length; i += 4) {
+        const rgb = pal[ids[i]];
+        if (!rgb) continue;
+        px[i] = px[i] * 0.5 + rgb[0] * 0.5; px[i + 1] = px[i + 1] * 0.5 + rgb[1] * 0.5; px[i + 2] = px[i + 2] * 0.5 + rgb[2] * 0.5;
+      }
+      ctx.putImageData(base, 0, 0);
+    }).catch(() => undefined);
+    return () => { alive = false; };
+  }, [colors, showMask]);
+  return <canvas ref={canvas} role="img" aria-label={`Rover NavCam frame ${SAMPLE.frame}${showMask ? ' with predicted terrain classes' : ''}`}
+    className="block aspect-square w-full bg-sunken" />;
+}
+
 function Hero({ latestId, latestName, latestFixture }: { latestId?: string; latestName?: string; latestFixture?: boolean }) {
+  const [view, setView] = useState<'overlay' | 'frame'>('overlay');
   return (
-    <section className="panel panel-ticks relative overflow-hidden">
-      <div className="absolute inset-0 bg-grid opacity-70" />
-      <div className="absolute -right-32 -top-40 h-96 w-96 rounded-full bg-accent/[0.08] blur-3xl" />
-      <div className="relative grid gap-6 p-6 md:p-8 lg:grid-cols-[1.25fr_1fr] lg:items-center">
+    <section className="panel relative overflow-hidden">
+      <div className="relative grid gap-8 p-6 md:p-8 lg:grid-cols-[1.2fr_1fr] lg:items-center">
         <div>
-          <div className="eyebrow mb-3 flex items-center gap-2 text-accent">
-            <span className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse2" /> AI4Mars · semantic segmentation · local inference
-          </div>
-          <h1 className="text-balance text-3xl font-semibold leading-[1.1] text-ink md:text-[2.5rem]">
-            Pixel-level terrain intelligence for Mars rover imagery
+          <div className="eyebrow mb-4">AI4Mars · semantic segmentation · runs on your machine</div>
+          <h1 className="text-balance text-3xl font-medium leading-tight text-ink md:text-4xl">
+            Segment Mars rover images into soil, bedrock, sand and big rock
           </h1>
           <p className="mt-4 max-w-xl text-sm leading-relaxed text-ink-2">
-            Train U-Net and DeepLabV3 on NASA JPL&apos;s AI4Mars dataset, segment rover photographs into soil, bedrock, sand and big
-            rocks, measure performance on expert-labelled held-out images, and explore how terrain maps could inform route planning.
-            Everything runs on your machine; every number shown is computed here.
+            Train U-Net and DeepLabV3 on NASA JPL&apos;s AI4Mars dataset, measure them on expert-labelled held-out images, and
+            explore how terrain maps could inform route planning. Everything runs on your machine; every number shown is computed
+            here. <Link to="/docs" className="text-ink underline decoration-line-strong underline-offset-2 hover:decoration-ink-2">Read the methodology</Link>
           </p>
           <div className="mt-6 flex flex-wrap gap-2">
-            <Link to="/analysis" className="btn-primary"><ScanSearch className="h-4 w-4" /> Analyse an image</Link>
-            <Link to="/dataset" className="btn-secondary"><Database className="h-4 w-4" /> Explore the dataset</Link>
-            <Link to="/docs" className="btn-ghost">Methodology <ArrowRight className="h-4 w-4" /></Link>
+            <Link to="/analysis" className="btn-primary"><ScanSearch className="h-4 w-4" strokeWidth={1.5} /> Analyse an image</Link>
+            <Link to="/dataset" className="btn-secondary"><Database className="h-4 w-4" strokeWidth={1.5} /> Explore the dataset</Link>
           </div>
         </div>
-        <div className="relative">
+        <figure className="w-full lg:max-w-[440px] lg:justify-self-end">
           {latestId ? (
-            <Link to={`/terrain?id=${latestId}`} className="group block">
-              <div className="relative overflow-hidden rounded-xl border border-line-strong">
-                <img src={api.analysisImageUrl(latestId, 'overlay', { alpha: 0.55 })} alt="Latest segmentation result" className="aspect-square w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]" />
-                <div className="pointer-events-none absolute inset-x-0 h-1/3 bg-gradient-to-b from-transparent via-accent/10 to-transparent animate-scan" />
-                <div className="absolute inset-x-0 bottom-0 flex items-center justify-between bg-gradient-to-t from-black/80 to-transparent p-3 text-xs text-white">
-                  <span className="truncate font-mono">{latestName}</span>
-                  <span className="chip border-white/20 bg-black/40 text-white">{latestFixture ? 'fixture' : 'latest result'}</span>
-                </div>
+            <Link to={`/terrain?id=${latestId}`} className="block">
+              <div className="panel-ticks relative rounded-xl border border-line-strong p-1">
+                <img src={api.analysisImageUrl(latestId, 'overlay', { alpha: 0.55 })} alt="Latest segmentation result" className="aspect-square w-full rounded-lg object-cover" />
               </div>
+              <figcaption className="mt-3 flex items-center justify-between gap-3 text-xs text-ink-3">
+                <span className="num truncate">{latestName}</span>
+                <span>{latestFixture ? 'Test fixture' : 'Latest result'}</span>
+              </figcaption>
             </Link>
           ) : (
-            <div className="grid aspect-[4/3] place-items-center rounded-xl border border-dashed border-line-strong bg-sunken/70 p-6 text-center">
-              <div>
-                <ScanSearch className="mx-auto h-8 w-8 text-ink-3" strokeWidth={1.4} />
-                <p className="mt-3 text-sm text-ink-2">Your latest segmentation will appear here.</p>
-                <p className="mt-1 text-xs text-ink-3">No analysis has been run yet.</p>
+            <>
+              <div className="panel-ticks relative rounded-xl border border-line-strong p-1">
+                <div className="overflow-hidden rounded-lg"><SampleOverlay showMask={view === 'overlay'} /></div>
               </div>
-            </div>
+              <figcaption className="mt-3 space-y-3">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <ClassLegend values={{ soil: `${SAMPLE.percent.soil}%`, bedrock: `${SAMPLE.percent.bedrock}%`, sand: `${SAMPLE.percent.sand}%`, big_rock: `${SAMPLE.percent.big_rock}%` }} />
+                  <Segmented size="sm" ariaLabel="Sample view" value={view} onChange={setView}
+                    options={[{ value: 'overlay', label: 'Prediction' }, { value: 'frame', label: 'NavCam frame' }]} />
+                </div>
+                <p className="text-xs leading-snug text-ink-3">
+                  Sample: DeepLabV3 prediction on held-out test frame <span className="num">{SAMPLE.frame}</span> (Curiosity NavCam).
+                  Your own latest result replaces it once you run an analysis.
+                </p>
+              </figcaption>
+            </>
           )}
-        </div>
+        </figure>
       </div>
     </section>
   );
