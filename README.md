@@ -1,6 +1,6 @@
 # Mars Terrain Intelligence
 
-**AI-powered Mars rover terrain segmentation, analysis and navigation simulation — runs entirely on your own computer.**
+**Segment Mars rover NavCam images into soil, bedrock, sand and big rock, and test terrain-aware route planning — runs entirely on your own computer.**
 
 Train U-Net and DeepLabV3 on NASA JPL's **AI4Mars** dataset, classify every pixel of a rover photograph as
 **soil, bedrock, sand or big rock**, score the models on expert-labelled held-out images, explore the terrain
