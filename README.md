@@ -2,6 +2,9 @@
 
 **AI-powered Mars rover terrain segmentation, analysis and navigation simulation — runs entirely on your own computer.**
 
+**Live demo:** https://huggingface.co/spaces/agrawalaarush08/mars-terrain-intelligence (browser edition: the trained
+models run in your browser; training and evaluation need the full app, which runs locally)
+
 Train U-Net and DeepLabV3 on NASA JPL's **AI4Mars** dataset, classify every pixel of a rover photograph as
 **soil, bedrock, sand or big rock**, score the models on expert-labelled held-out images, explore the terrain
 statistics, and experiment with terrain-aware A\* route planning — all through a web interface.
