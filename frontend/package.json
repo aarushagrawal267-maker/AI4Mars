@@ -13,7 +13,6 @@
     "e2e": "playwright test"
   },
   "dependencies": {
-    "@fontsource/ibm-plex-sans": "5.1.1",
     "@fontsource/jetbrains-mono": "5.1.2",
     "@fontsource/space-grotesk": "5.1.1",
     "lucide-react": "0.468.0",

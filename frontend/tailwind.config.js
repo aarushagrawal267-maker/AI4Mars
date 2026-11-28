@@ -23,14 +23,13 @@ export default {
         info: v('info'),
       },
       fontFamily: {
-        sans: ['"IBM Plex Sans"', 'system-ui', 'sans-serif'],
-        display: ['"Space Grotesk"', '"IBM Plex Sans"', 'sans-serif'],
+        sans: ['"Space Grotesk"', 'system-ui', 'sans-serif'],
+        display: ['"Space Grotesk"', 'system-ui', 'sans-serif'],
         mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
       },
       fontSize: { '2xs': ['0.6875rem', { lineHeight: '1rem' }] },
       boxShadow: {
         panel: '0 1px 0 0 rgb(var(--hi) / 0.04) inset, 0 12px 32px -18px rgb(0 0 0 / 0.55)',
-        glow: '0 0 0 1px rgb(var(--accent) / 0.45), 0 0 24px -6px rgb(var(--accent) / 0.45)',
       },
       keyframes: {
         'fade-in': { from: { opacity: 0, transform: 'translateY(4px)' }, to: { opacity: 1, transform: 'none' } },
