@@ -94,7 +94,7 @@ export default function NavigationSimulator() {
         {' '}Grid cells are image-space, not metres: perspective makes distant cells cover far more ground than near ones.
       </Callout>
       {(history.error || grid.error) && <ErrorBanner error={history.error ?? grid.error} className="mb-4" />}
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
         <div className="min-w-0 space-y-6">
           <Panel ticks title="Terrain grid" icon={MapIcon}
             actions={

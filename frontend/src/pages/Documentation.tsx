@@ -76,7 +76,7 @@ export default function Documentation() {
     <div>
       <PageHeader eyebrow="09 · reference" title="Documentation"
         description="How the system works, what it assumes, and where it falls short. The repository's docs/ folder contains the long-form versions of these sections." />
-      <div className="grid gap-10 xl:grid-cols-[220px_1fr]">
+      <div className="grid grid-cols-1 gap-10 xl:grid-cols-[220px_1fr]">
         <nav className="hidden xl:block" aria-label="Documentation sections">
           <div className="sticky top-20 space-y-0.5">
             <div className="eyebrow mb-2 flex items-center gap-1.5"><BookOpen className="h-3 w-3" /> contents</div>
@@ -102,7 +102,7 @@ export default function Documentation() {
           </Section>
 
           <Section id="architecture" title="Technical architecture">
-            <div className="grid gap-3 md:grid-cols-3">
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
               <Box title="frontend/ · React + TypeScript" items={['Vite, Tailwind CSS, Recharts', '10 pages, React Router', 'Polls the REST API; no data of its own']} />
               <Box title="backend/ · FastAPI" accent items={['REST API + OpenAPI docs at :8000/docs', 'SQLite via SQLAlchemy (experiments, evaluations, analyses, settings)', 'Background jobs; A* planner']} />
               <Box title="ml/ · PyTorch" items={['Dataset acquisition, validation, caching', 'U-Net, DeepLabV3, training loop', 'Metrics, inference, terrain statistics']} />

@@ -55,7 +55,7 @@ export default function DatasetExplorer() {
           ) : stats.data && validation.data ? (
             <>
               <StatsSection stats={stats.data} />
-              <div className="grid gap-6 xl:grid-cols-2">
+              <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
                 <ValidationSection report={validation.data} />
                 <TestVariants stats={stats.data} />
               </div>
@@ -134,7 +134,7 @@ function Acquisition({ onChanged }: { onChanged: () => void }) {
   const approxMb = all ? 5500 : Math.round(count * 0.345 + 125);
 
   return (
-    <div className="grid gap-6 xl:grid-cols-[1fr_1.2fr]">
+    <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1fr_1.2fr]">
       <Panel title="Data source" icon={Database} ticks>
         <KV items={[
           ['Dataset', <a key="d" className="inline-flex items-center gap-1 text-ink hover:text-accent" href={s.source.record_url} target="_blank" rel="noreferrer">AI4Mars merged v0.6 <ExternalLink className="h-3 w-3" /></a>],
@@ -230,7 +230,7 @@ function StatsSection({ stats }: { stats: DatasetStatistics }) {
         <Stat label="Unlabelled (train)" value={pct(st.splits.train.unlabeled_percent)} sub="excluded from loss" tone="warn" />
         <Stat label="Big rock (train)" value={pct(st.splits.train.class_percent_of_labeled.big_rock, 2)} sub="of labelled pixels" tone="bad" />
       </div>
-      <div className="grid gap-6 xl:grid-cols-[1.1fr_1fr]">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.1fr_1fr]">
         <Panel title="Class distribution" eyebrow="share of labelled pixels" icon={Layers}
           actions={<Segmented size="sm" value={split} onChange={setSplit} options={Object.keys(splitData).map((k) => ({ value: k, label: k }))} />}>
           <ClassBars percent={current.class_percent_of_labeled as Record<ClassKey, number>} height={190} valueDigits={2} />

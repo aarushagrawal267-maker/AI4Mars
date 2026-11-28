@@ -127,7 +127,7 @@ function RunPanel({ models, indexed, onDone }: { models: Parameters<typeof Model
   return (
     <Panel title="Run an evaluation" icon={Play} ticks>
       {!indexed ? <Callout tone="warn">Load the dataset first: evaluation needs the held-out labelled images.</Callout> : (
-        <div className="grid items-end gap-3 md:grid-cols-[2fr_auto_auto_140px_auto]">
+        <div className="grid grid-cols-1 items-end gap-3 md:grid-cols-[2fr_auto_auto_140px_auto]">
           <Field label="Model"><ModelSelect models={models} value={modelId} onChange={setModelId} /></Field>
           <Field label="Held-out split"><Segmented value={split} onChange={setSplit} options={[{ value: 'test', label: 'Test (expert)' }, { value: 'val', label: 'Validation' }]} /></Field>
           <Field label="Label agreement">
@@ -180,9 +180,9 @@ function EvaluationDetail({ ev }: { ev: Evaluation }) {
         <Stat label="Parameters" value={compact(m.model.parameters)} />
         <Stat label="Checkpoint" value={`${m.model.checkpoint_mb.toFixed(1)} MB`} sub={m.model.checkpoint_epoch ? `epoch ${m.model.checkpoint_epoch}` : undefined} />
       </div>
-      <div className="grid gap-6 xl:grid-cols-[1.1fr_1fr]">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.1fr_1fr]">
         <Panel title="Per-class performance" icon={Scale} padded={false}>
-          <table className="table-clean">
+          <div className="overflow-x-auto"><table className="table-clean">
             <thead><tr><th>Class</th><th className="text-right">IoU</th><th className="text-right">Dice</th><th className="text-right">Precision</th><th className="text-right">Recall</th><th className="text-right">GT pixels</th></tr></thead>
             <tbody>
               {CLASS_KEYS.map((k) => {
@@ -199,7 +199,7 @@ function EvaluationDetail({ ev }: { ev: Evaluation }) {
                 );
               })}
             </tbody>
-          </table>
+          </table></div>
           <div className="p-4">
             <GroupedClassBars height={220} groups={[
               { id: 'precision', name: 'Precision', color: SERIES.train, values: Object.fromEntries(CLASS_KEYS.map((k) => [k, m.per_class[k].precision])) as never },
@@ -270,7 +270,7 @@ function Comparison({ evals }: { evals: Evaluation[] }) {
           </table>
         </div>
       </Panel>
-      <div className="grid gap-6 xl:grid-cols-2">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
         <Panel title="Headline metrics">
           <ResponsiveContainer width="100%" height={240}>
             <BarChart data={summary} margin={{ top: 18, right: 8, left: 0, bottom: 4 }} barGap={2}>

@@ -30,7 +30,7 @@ export default function Settings() {
   return (
     <div className="space-y-6">
       <PageHeader eyebrow="10 · system" title="Settings" description="Connection, hardware, storage locations and display preferences." />
-      <div className="grid gap-6 xl:grid-cols-2">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
         <Panel title="Backend connection" icon={Server}>
           <KV items={[
             ['Status', <StatusBadge key="s" state={connection} />],
@@ -88,7 +88,7 @@ export default function Settings() {
           <button className="btn-ghost text-xs" onClick={() => setDraft(DEFAULT_COLORS)}><RotateCcw className="h-3.5 w-3.5" /> Default</button>
           <button className="btn-primary text-xs" onClick={() => save(draft)}><Save className="h-3.5 w-3.5" /> {saved ? 'Saved' : 'Apply'}</button>
         </>}>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {CLASS_KEYS.map((k, i) => (
             <div key={k} className="rounded-lg border border-line bg-sunken/50 p-3">
               <div className="flex items-center justify-between">

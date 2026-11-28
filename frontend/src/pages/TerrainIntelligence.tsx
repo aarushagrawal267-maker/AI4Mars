@@ -33,7 +33,7 @@ export default function TerrainIntelligence() {
           Run a segmentation in Image Analysis; its terrain breakdown appears here.
         </EmptyState>
       ) : (
-        <div className="grid gap-6 xl:grid-cols-[260px_minmax(0,1fr)]">
+        <div className="grid grid-cols-1 gap-6 xl:grid-cols-[260px_minmax(0,1fr)]">
           <Panel title="Analyses" icon={Layers} padded={false} className="xl:sticky xl:top-20 xl:self-start">
             <div className="max-h-[70vh] space-y-0.5 overflow-y-auto p-2">
               {history.data?.analyses.map((x) => <AnalysisThumb key={x.id} a={x} active={x.id === id} onClick={() => setParams({ id: x.id })} />)}
@@ -68,7 +68,7 @@ export default function TerrainIntelligence() {
                   <Callout tone="warn" className="mt-3">Segmentation describes appearance only. It cannot tell slope, rock height, sinkage risk or traction, so it is not by itself a statement about whether a rover can drive here.</Callout>
                 </Panel>
 
-                <div className="grid gap-6 xl:grid-cols-2">
+                <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
                   <Panel title="Terrain distribution" icon={Layers}><ClassBars percent={s.class_percent} height={180} valueDigits={2} /></Panel>
                   <Panel title="Frame zones" eyebrow="dominant class per 3×3 zone" icon={Grid3x3}><ZoneGrid zones={s.zone_composition} /></Panel>
                 </div>
@@ -103,7 +103,7 @@ export default function TerrainIntelligence() {
                   <p className="px-4 py-3 text-2xs text-ink-3">Regions are 8-connected components of the predicted class. Centroid and extent are fractions of image height and width.</p>
                 </Panel>
 
-                <div className="grid gap-6 xl:grid-cols-2">
+                <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
                   <Panel title="Confidence distribution" icon={Activity} eyebrow="max softmax probability · uncalibrated">
                     {s.confidence && <ConfidenceHistogram histogram={s.confidence.histogram} />}
                     <div className="mt-3 grid grid-cols-3 gap-2 text-center text-xs">

@@ -52,7 +52,7 @@ export default function ModelTraining() {
           Training needs the validated AI4Mars train/validation splits. Download a subset or import the archive, then come back.
         </EmptyState>
       ) : (
-        <div className="grid gap-6 xl:grid-cols-[400px_minmax(0,1fr)]">
+        <div className="grid grid-cols-1 gap-6 xl:grid-cols-[400px_minmax(0,1fr)]">
           {IS_DEMO ? (
             <Panel title="Training needs the full app" icon={BrainCircuit} ticks>
               <p className="text-sm leading-relaxed text-ink-2">Training runs on the Python backend with the AI4Mars training images, which are not part of this browser edition. On the right is the most recent real training run from the local platform: its loss curves, validation metrics and full log.</p>
@@ -365,7 +365,7 @@ function Monitor({ status, error }: { status?: TrainingStatus; error?: Error }) 
         <Panel><p className="py-8 text-center text-sm text-ink-3">Curves appear after the first epoch completes{s.active ? ' (preprocessing is cached the first time a resolution is used).' : '.'}</p></Panel>
       ) : (
         <>
-          <div className="grid gap-6 xl:grid-cols-2">
+          <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
             <Panel title="Loss" eyebrow="cross-entropy + dice · per epoch"><LossChart history={history} /></Panel>
             <Panel title="Validation metrics" eyebrow="held-out validation split"><ValMetricChart history={history} /></Panel>
           </div>

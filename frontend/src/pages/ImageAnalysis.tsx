@@ -116,7 +116,7 @@ export default function ImageAnalysis() {
 
       {models.error && <ErrorBanner error={models.error} onRetry={models.reload} className="mb-4" />}
       {models.loading && !models.data ? <Loading /> : list.length === 0 ? <NoModels /> : (
-        <div className="grid gap-6 xl:grid-cols-[380px_1fr]">
+        <div className="grid grid-cols-1 gap-6 xl:grid-cols-[380px_1fr]">
           <div className="space-y-4">
             <Panel title="Input" icon={ImageIcon} ticks>
               <div className="space-y-4">
@@ -204,7 +204,7 @@ export default function ImageAnalysis() {
                   </>}>
                   <SegmentationViewer analysis={result} />
                 </Panel>
-                <div className="grid gap-6 2xl:grid-cols-[1.3fr_1fr]">
+                <div className="grid grid-cols-1 gap-6 2xl:grid-cols-[1.3fr_1fr]">
                   <Panel title="Terrain distribution" eyebrow="computed from this prediction">
                     <TerrainSummary analysis={result} />
                   </Panel>

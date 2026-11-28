@@ -91,7 +91,7 @@ export default function Overview() {
         </Panel>
       )}
 
-      <div className="grid gap-6 xl:grid-cols-3">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
         <Panel title="Model evaluation summary" icon={Gauge} className="xl:col-span-2" padded={false}
           actions={<Link to="/evaluation" className="btn-ghost text-xs">All results <ArrowRight className="h-3.5 w-3.5" /></Link>}>
           {d.evaluations.length === 0 ? (
@@ -140,7 +140,7 @@ export default function Overview() {
             {d.dataset.indexed ? 'The dataset is ready. Train U-Net and DeepLabV3 to compare them.' : 'Begin by loading the AI4Mars dataset, then train a model.'}
           </EmptyState>
         ) : (
-          <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-4">
             {d.models.slice(0, 8).map((m) => (
               <div key={m.id}>
                 <ModelCard model={m} />

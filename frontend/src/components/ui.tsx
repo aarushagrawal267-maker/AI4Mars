@@ -251,7 +251,7 @@ export function Segmented<T extends string>({ options, value, onChange, size = '
   ariaLabel?: string;
 }) {
   return (
-    <div role="tablist" aria-label={ariaLabel} className={cx('inline-flex rounded-lg border border-line bg-sunken p-0.5', className)}>
+    <div role="tablist" aria-label={ariaLabel} className={cx('inline-flex max-w-full flex-wrap rounded-lg border border-line bg-sunken p-0.5', className)}>
       {options.map((o) => (
         <button key={o.value} role="tab" type="button" aria-selected={value === o.value} title={o.title} disabled={o.disabled}
           onClick={() => onChange(o.value)}

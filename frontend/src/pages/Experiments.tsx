@@ -133,7 +133,7 @@ function ExperimentView({ id, onChanged, onDeleted }: { id: string; onChanged: (
         {e.error && <Callout tone="bad" className="mb-3" title="Run error">{e.error}</Callout>}
         {e.is_fixture && <Callout tone="info" className="mb-3">This is the untrained test fixture used by automated UI tests. It is not a trained model.</Callout>}
         {error && <ErrorBanner error={error} className="mb-3" />}
-        <div className="grid gap-6 lg:grid-cols-[1fr_1fr_1.2fr]">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_1fr_1.2fr]">
           <KV items={CONFIG_ROWS.slice(0, 9).map(([k, f]) => [k, f(e)])} />
           <KV items={CONFIG_ROWS.slice(9).map(([k, f]) => [k, f(e)])} />
           <div className="space-y-3">
@@ -157,7 +157,7 @@ function ExperimentView({ id, onChanged, onDeleted }: { id: string; onChanged: (
       </Panel>
       {e.history.length > 0 && (
         <>
-          <div className="grid gap-6 xl:grid-cols-2">
+          <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
             <Panel title="Loss curves" eyebrow="training vs validation"><LossChart history={e.history} /></Panel>
             <Panel title="Validation metrics"><ValMetricChart history={e.history} /></Panel>
           </div>
@@ -180,7 +180,7 @@ function EvaluationsOf({ exp }: { exp: ExperimentDetail }) {
   return (
     <Panel title="Evaluations of this model" padded={false}
       actions={<a className="btn-ghost text-xs" href={api.evaluationReportUrl(exp.evaluations.map((v) => v.id), 'csv')} download><Download className="h-3.5 w-3.5" /> All as CSV</a>}>
-      <table className="table-clean">
+      <div className="overflow-x-auto"><table className="table-clean">
         <thead><tr><th>Split</th><th className="text-right">Images</th><th className="text-right">Pixel acc.</th><th className="text-right">mIoU</th><th className="text-right">Dice</th><th className="text-right">Soil</th><th className="text-right">Bedrock</th><th className="text-right">Sand</th><th className="text-right">Big rock</th><th className="text-right">When</th></tr></thead>
         <tbody>
           {exp.evaluations.map((v) => (
@@ -195,7 +195,7 @@ function EvaluationsOf({ exp }: { exp: ExperimentDetail }) {
             </tr>
           ))}
         </tbody>
-      </table>
+      </table></div>
       <p className="px-4 py-3 text-2xs text-ink-3">Validation-split numbers guided checkpoint selection; only test-split numbers are unbiased estimates of held-out performance.</p>
     </Panel>
   );
@@ -211,12 +211,12 @@ function CompareExperiments({ ids, all }: { ids: string[]; all: Experiment[] }) 
   const differing = CONFIG_ROWS.filter(([, f]) => new Set(exps.map(f)).size > 1);
   return (
     <div className="space-y-6">
-      <div className="grid gap-6 xl:grid-cols-2">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
         <Panel title="Validation mIoU" icon={GitCompare}><MultiCurve series={series} metric="val_mean_iou" percent /></Panel>
         <Panel title="Validation loss" icon={GitCompare}><MultiCurve series={series} metric="val_loss" /></Panel>
       </div>
       <Panel title="Configuration differences" padded={false}>
-        <table className="table-clean">
+        <div className="overflow-x-auto"><table className="table-clean">
           <thead><tr><th>Setting</th>{exps.map((e, i) => <th key={e.id}><span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full" style={{ background: MULTI[i % MULTI.length] }} /><span className="max-w-[200px] truncate normal-case">{e.name}</span></span></th>)}</tr></thead>
           <tbody>
             {(differing.length ? differing : CONFIG_ROWS.slice(0, 1)).map(([k, f]) => (
@@ -224,7 +224,7 @@ function CompareExperiments({ ids, all }: { ids: string[]; all: Experiment[] }) 
             ))}
             <tr><td className="text-ink-2">Best val mIoU</td>{exps.map((e) => <td key={e.id} className="num text-accent">{ratio(e.best_val_miou, 2)}</td>)}</tr>
           </tbody>
-        </table>
+        </table></div>
         <p className="px-4 py-3 text-2xs text-ink-3">{differing.length ? `${differing.length} setting(s) differ; everything else is identical.` : 'All recorded settings are identical.'} For a fair architecture comparison only the architecture should differ.</p>
       </Panel>
     </div>

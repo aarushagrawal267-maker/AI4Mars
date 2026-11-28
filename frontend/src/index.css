@@ -87,7 +87,7 @@
 @layer components {
   /* Instrument panel: hairline border + corner registration marks. */
   .panel {
-    @apply relative rounded-xl border border-line bg-surface shadow-panel;
+    @apply relative min-w-0 rounded-xl border border-line bg-surface shadow-panel;
   }
   .panel-ticks::before,
   .panel-ticks::after {
