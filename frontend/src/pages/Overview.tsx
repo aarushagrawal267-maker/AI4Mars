@@ -262,8 +262,7 @@ function Hero({ latestId, latestName, latestFixture }: { latestId?: string; late
                     options={[{ value: 'overlay', label: 'Prediction' }, { value: 'frame', label: 'NavCam frame' }]} />
                 </div>
                 <p className="text-xs leading-snug text-ink-3">
-                  Sample: DeepLabV3 prediction on held-out test frame <span className="num">{SAMPLE.frame}</span> (Curiosity NavCam).
-                  Your own latest result replaces it once you run an analysis.
+                  Sample DeepLabV3 prediction, held-out test frame <span className="num">{SAMPLE.frame}</span>
                 </p>
               </figcaption>
             </>

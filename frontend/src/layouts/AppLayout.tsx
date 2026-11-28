@@ -176,7 +176,6 @@ export default function AppLayout() {
         </div>
       )}
       <div className="relative flex min-w-0 flex-1 flex-col">
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-80 bg-grid [mask-image:linear-gradient(to_bottom,black,transparent)]" />
         <Topbar onMenu={() => setOpen(true)} />
         {connection === 'offline' && (
           <div role="alert" className="relative border-b border-bad/30 bg-bad/[0.08] px-4 py-3 text-sm text-ink-2 md:px-8">

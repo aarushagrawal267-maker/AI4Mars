@@ -187,9 +187,9 @@ export default function ImageAnalysis() {
               </div>
             )}
             {!result && !running && (
-              <div className="panel grid min-h-[420px] place-items-center bg-grid p-8 text-center">
+              <div className="panel grid min-h-[420px] place-items-center p-8 text-center">
                 <div>
-                  <ScanSearch className="mx-auto h-10 w-10 text-ink-3" strokeWidth={1.3} />
+                  <ScanSearch className="mx-auto h-10 w-10 text-ink-3" strokeWidth={1.5} />
                   <h3 className="mt-4 text-base font-medium">Results appear here</h3>
                   <p className="mt-1 max-w-sm text-sm text-ink-3">Choose an image and a model, then run the analysis. You will get the mask, an overlay, a swipe comparison, confidence and uncertainty maps, and terrain statistics.</p>
                 </div>
