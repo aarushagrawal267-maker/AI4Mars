@@ -81,14 +81,13 @@ export function Dropzone({ onFile, disabled, maxMb = 20, children }: {
         if (f && !disabled) onFile(f);
       }}
       className={cx(
-        'group relative flex cursor-pointer flex-col items-center justify-center overflow-hidden rounded-xl border border-dashed px-6 py-9 text-center transition-all',
+        'group relative flex cursor-pointer flex-col items-center justify-center overflow-hidden rounded-xl border border-dashed px-6 py-10 text-center transition-colors',
         over ? 'border-accent bg-accent/[0.07]' : 'border-line-strong bg-sunken/60 hover:border-accent/60 hover:bg-accent/[0.03]',
         disabled && 'pointer-events-none opacity-50',
       )}>
-      <div className="absolute inset-0 bg-grid opacity-60" />
       <div className="relative">
-        <div className="mx-auto mb-3 grid h-11 w-11 place-items-center rounded-xl border border-line bg-raised transition-transform group-hover:-translate-y-0.5">
-          {over ? <ImagePlus className="h-5 w-5 text-accent" /> : <UploadCloud className="h-5 w-5 text-accent" />}
+        <div className="mx-auto mb-3 grid h-11 w-11 place-items-center rounded-xl border border-line bg-raised">
+          {over ? <ImagePlus className="h-5 w-5 text-accent" strokeWidth={1.5} /> : <UploadCloud className="h-5 w-5 text-ink-2" strokeWidth={1.5} />}
         </div>
         <div className="text-sm font-medium text-ink">Drop a Mars rover image here, or click to browse</div>
         <div className="mt-1 text-xs text-ink-3">JPG, JPEG or PNG · up to {maxMb} MB · grayscale NavCam frames match the training data best</div>

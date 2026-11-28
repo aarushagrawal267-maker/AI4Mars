@@ -33,7 +33,7 @@ export const NAV: NavItem[] = [
 export function Logo({ compact = false }: { compact?: boolean }) {
   return (
     <Link to="/" className="flex items-center gap-3" aria-label="Mars Terrain Intelligence home">
-      <svg viewBox="0 0 40 40" className="h-9 w-9 shrink-0" aria-hidden="true">
+      <svg viewBox="7 7 26 26" className="h-7 w-7 shrink-0" aria-hidden="true">
         <defs>
           <clipPath id="mti-planet"><circle cx="20" cy="20" r="13" /></clipPath>
         </defs>
@@ -45,14 +45,9 @@ export function Logo({ compact = false }: { compact?: boolean }) {
           <rect x="7" y="20" width="13" height="13" fill="#35A3E8" opacity="0.5" />
           <path d="M7 20h26M20 7v26" stroke="#0b0c0e" strokeWidth="1.2" />
         </g>
-        <circle cx="20" cy="20" r="13" fill="none" stroke="#E8743B" strokeWidth="1" />
-        <ellipse cx="20" cy="20" rx="19" ry="6.5" fill="none" stroke="#E8743B" strokeWidth="1" opacity="0.6" transform="rotate(-20 20 20)" />
       </svg>
       {!compact && (
-        <div className="leading-none">
-          <div className="font-display text-[13px] font-semibold tracking-[0.16em] text-ink">MARS TERRAIN</div>
-          <div className="mt-1 font-mono text-[10px] tracking-[0.32em] text-accent">INTELLIGENCE</div>
-        </div>
+        <span className="text-sm font-medium leading-none text-ink">Mars Terrain Intelligence</span>
       )}
     </Link>
   );
@@ -65,7 +60,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   let lastGroup = '';
   return (
     <div className="flex h-full flex-col">
-      <div className="px-5 pb-5 pt-6">
+      <div className="px-5 pb-6 pt-6">
         <Logo />
       </div>
       <nav className="flex-1 overflow-y-auto px-3" aria-label="Main">
@@ -77,14 +72,14 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
               {showGroup && i > 0 && <div className="mx-2 my-2 h-px bg-line/70" />}
               <NavLink to={item.to} end={item.to === '/'} onClick={onNavigate}
                 className={({ isActive }) => cx(
-                  'group relative flex items-center gap-3 rounded-lg px-2.5 py-2 text-[13px] transition-colors',
+                  'group relative mb-0.5 flex items-center gap-3 rounded-lg px-2 py-2 text-sm transition-colors',
                   isActive ? 'bg-raised text-ink ring-1 ring-line' : 'text-ink-2 hover:bg-raised/60 hover:text-ink',
                 )}>
                 {({ isActive }) => (
                   <>
                     {isActive && <span className="absolute -left-3 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-r bg-accent" />}
-                    <span className={cx('num w-5 text-[10px]', isActive ? 'text-accent' : 'text-ink-3')}>{String(i + 1).padStart(2, '0')}</span>
-                    <item.icon className={cx('h-4 w-4', isActive ? 'text-accent' : 'text-ink-3 group-hover:text-ink-2')} strokeWidth={1.75} />
+                    <span className="num w-5 text-2xs text-ink-3">{String(i + 1).padStart(2, '0')}</span>
+                    <item.icon className={cx('h-4 w-4', isActive ? 'text-ink' : 'text-ink-3 group-hover:text-ink-2')} strokeWidth={1.5} />
                     <span className="truncate">{item.label}</span>
                   </>
                 )}
@@ -93,17 +88,17 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
           );
         })}
       </nav>
-      <div className="space-y-2.5 border-t border-line/70 p-4">
+      <div className="space-y-2 border-t border-line/70 p-4">
         {t?.active && (
-          <Link to="/training" onClick={onNavigate} className="block rounded-lg border border-accent/30 bg-accent/[0.07] p-2.5 transition-colors hover:bg-accent/[0.12]">
+          <Link to="/training" onClick={onNavigate} className="block rounded-lg border border-accent/30 bg-accent/[0.07] p-3 transition-colors hover:bg-accent/[0.12]">
             <div className="flex items-center justify-between text-2xs">
               <span className="flex items-center gap-1.5 font-medium text-accent">
                 <Activity className="h-3 w-3" /> {t.state === 'paused' ? 'Training paused' : 'Training'}
               </span>
               <span className="num text-ink-2">{Math.round((t.progress ?? 0) * 100)}%</span>
             </div>
-            <div className="mt-1.5 h-1 overflow-hidden rounded-full bg-sunken">
-              <div className="h-full bg-accent transition-[width] duration-700" style={{ width: `${(t.progress ?? 0) * 100}%` }} />
+            <div className="mt-2 h-1 overflow-hidden rounded-full bg-sunken">
+              <div className="h-full origin-left bg-accent transition-transform duration-500 ease-out" style={{ transform: `scaleX(${t.progress ?? 0})` }} />
             </div>
             <div className="mt-1 truncate text-2xs text-ink-3">
               {t.arch === 'deeplabv3' ? 'DeepLabV3' : 'U-Net'} · epoch {t.epoch ?? 0}/{t.epochs_total} · ETA {duration(t.eta_seconds)}
@@ -117,7 +112,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
           </span>
           <span className="num text-ink-3">v{health?.version ?? '—'}</span>
         </div>
-        <p className="text-[10px] leading-snug text-ink-3/80">
+        <p className="text-2xs leading-snug text-ink-3">
           Independent student research project. Not affiliated with or endorsed by NASA/JPL.
         </p>
       </div>
@@ -135,7 +130,7 @@ function Topbar({ onMenu }: { onMenu: () => void }) {
     <div className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-line/70 bg-bg/80 px-4 backdrop-blur-md md:px-8">
       <button className="btn-ghost -ml-2 p-2 lg:hidden" onClick={onMenu} aria-label="Open navigation"><Menu className="h-5 w-5" /></button>
       <div className="flex min-w-0 items-center gap-2 text-sm">
-        <Telescope className="hidden h-4 w-4 text-ink-3 sm:block" strokeWidth={1.6} />
+        <Telescope className="hidden h-4 w-4 text-ink-3 sm:block" strokeWidth={1.5} />
         <span className="hidden text-ink-3 sm:inline">MTI</span>
         <span className="hidden text-ink-3 sm:inline">/</span>
         <span className="truncate font-medium text-ink">{current?.label ?? 'Not found'}</span>
@@ -184,7 +179,7 @@ export default function AppLayout() {
         <div className="pointer-events-none absolute inset-x-0 top-0 h-80 bg-grid [mask-image:linear-gradient(to_bottom,black,transparent)]" />
         <Topbar onMenu={() => setOpen(true)} />
         {connection === 'offline' && (
-          <div role="alert" className="relative border-b border-bad/30 bg-bad/[0.08] px-4 py-2.5 text-sm text-ink-2 md:px-8">
+          <div role="alert" className="relative border-b border-bad/30 bg-bad/[0.08] px-4 py-3 text-sm text-ink-2 md:px-8">
             <span className="font-medium text-bad">Backend unreachable.</span> Start it with <code className="num text-ink">.\start.ps1</code> (or{' '}
             <code className="num text-ink">uvicorn backend.app.main:app --port 8000</code>). Data on this page will refresh automatically once it is up.
           </div>

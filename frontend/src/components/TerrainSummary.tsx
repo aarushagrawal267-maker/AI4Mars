@@ -20,19 +20,19 @@ export default function TerrainSummary({ analysis }: { analysis: Analysis }) {
       <div className="flex flex-wrap items-center gap-5">
         <CompositionRing percent={s.class_percent} center={
           <div>
-            <div className="eyebrow">dominant</div>
-            <div className="mt-0.5 text-base font-semibold" style={{ color: dom ? colorOf(dom) : undefined }}>{dom ? CLASS_LABEL[dom] : '—'}</div>
+            <div className="eyebrow">Dominant</div>
+            <div className="mt-0.5 text-base font-medium" style={{ color: dom ? colorOf(dom) : undefined }}>{dom ? CLASS_LABEL[dom] : '—'}</div>
             <div className="num text-xs text-ink-2">{dom ? `${s.class_percent[dom].toFixed(1)}%` : ''}</div>
           </div>
         } />
         <div className="min-w-[220px] flex-1">
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-left font-mono text-2xs uppercase tracking-wider text-ink-3">
-                <th className="pb-1.5 font-medium">Class</th>
-                <th className="pb-1.5 text-right font-medium">Share</th>
-                <th className="pb-1.5 text-right font-medium">Pixels</th>
-                <th className="pb-1.5 text-right font-medium" title="Mean softmax confidence of pixels predicted as this class">Conf.</th>
+              <tr className="text-left text-2xs font-medium text-ink-3">
+                <th className="pb-2 font-medium">Class</th>
+                <th className="pb-2 text-right font-medium">Share</th>
+                <th className="pb-2 text-right font-medium">Pixels</th>
+                <th className="pb-2 text-right font-medium" title="Mean softmax confidence of pixels predicted as this class">Conf.</th>
               </tr>
             </thead>
             <tbody>
