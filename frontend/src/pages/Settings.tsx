@@ -29,7 +29,7 @@ export default function Settings() {
   const s = sys.data;
   return (
     <div className="space-y-6">
-      <PageHeader eyebrow="10 · system" title="Settings" description="Connection, hardware, storage locations and display preferences." />
+      <PageHeader eyebrow="10 · System" title="Settings" description="Connection, hardware, storage locations and display preferences." />
       <div className="grid gap-6 xl:grid-cols-2">
         <Panel title="Backend connection" icon={Server}>
           <KV items={[
@@ -118,7 +118,7 @@ function AdminToken() {
   const [saved, setSaved] = useState(false);
   return (
     <div className="mt-5 border-t border-line pt-4">
-      <label className="mb-1.5 block text-xs font-medium text-ink-2" htmlFor="admin-token">Admin token (public demo)</label>
+      <label className="mb-2 block text-xs font-medium text-ink-2" htmlFor="admin-token">Admin token (public demo)</label>
       <div className="flex gap-2">
         <input id="admin-token" type="password" className="field" value={value} placeholder="unlocks training, evaluation and deletion"
           onChange={(e) => { setValue(e.target.value); setSaved(false); }} />
@@ -127,7 +127,7 @@ function AdminToken() {
           setSaved(true);
         }}>{saved ? 'Saved' : 'Save'}</button>
       </div>
-      <p className="mt-1.5 text-2xs text-ink-3">Stored only in this browser and sent with each request. The server checks it against MTI_ADMIN_TOKEN.</p>
+      <p className="mt-2 text-2xs text-ink-3">Stored only in this browser and sent with each request. The server checks it against MTI_ADMIN_TOKEN.</p>
     </div>
   );
 }

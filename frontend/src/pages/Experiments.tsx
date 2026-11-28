@@ -21,7 +21,7 @@ export default function Experiments() {
 
   return (
     <div className="space-y-6">
-      <PageHeader eyebrow="08 · record" title="Experiments"
+      <PageHeader eyebrow="08 · Record" title="Experiments"
         description="Every training run is recorded in SQLite — including stopped, failed and interrupted runs, because failed experiments are part of the research record. Compare configurations and curves, keep notes, and download reports." />
       {list.error && <ErrorBanner error={list.error} onRetry={list.reload} />}
       {!list.data ? <Loading /> : list.data.experiments.length === 0 ? (
@@ -118,7 +118,7 @@ function ExperimentView({ id, onChanged, onDeleted }: { id: string; onChanged: (
   }
   return (
     <div className="space-y-6">
-      <Panel ticks icon={FlaskConical} eyebrow={e.id}
+      <Panel icon={FlaskConical} eyebrow={e.id}
         title={editing ? <input className="field py-1 text-sm" value={name} onChange={(ev) => { setName(ev.target.value); setDirty(true); }} aria-label="Experiment name" /> : <span className="flex items-center gap-2">{e.name} <StatusBadge state={e.status} /></span>}
         actions={IS_DEMO ? undefined : <>
           {editing ? <button className="btn-primary text-xs" onClick={save}><Save className="h-3.5 w-3.5" /> Save</button>
@@ -158,7 +158,7 @@ function ExperimentView({ id, onChanged, onDeleted }: { id: string; onChanged: (
       {e.history.length > 0 && (
         <>
           <div className="grid gap-6 xl:grid-cols-2">
-            <Panel title="Loss curves" eyebrow="training vs validation"><LossChart history={e.history} /></Panel>
+            <Panel title="Loss curves" eyebrow="Training vs validation"><LossChart history={e.history} /></Panel>
             <Panel title="Validation metrics"><ValMetricChart history={e.history} /></Panel>
           </div>
           <Panel title="Validation IoU per class"><PerClassIouHistory history={e.history} /></Panel>

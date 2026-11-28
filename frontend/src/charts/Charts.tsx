@@ -22,7 +22,7 @@ export const MULTI = ['#E8743B', '#62A0DE', '#46BE8C', '#D9A23A', '#C66BD6', '#8
 function TooltipBox({ title, rows }: { title?: ReactNode; rows: { color?: string; label: ReactNode; value: ReactNode }[] }) {
   return (
     <div className="min-w-[150px] rounded-lg border border-line-strong bg-surface/95 px-3 py-2 text-xs shadow-xl backdrop-blur">
-      {title !== undefined && <div className="mb-1.5 font-mono text-2xs uppercase tracking-wider text-ink-3">{title}</div>}
+      {title !== undefined && <div className="mb-2 text-2xs font-medium text-ink-3">{title}</div>}
       <div className="space-y-1">
         {rows.map((r, i) => (
           <div key={i} className="flex items-center justify-between gap-4">
@@ -244,14 +244,14 @@ export function ConfusionMatrix({ matrix, normalize = true }: { matrix: number[]
   const max = Math.max(1, ...matrix.flat());
   return (
     <div className="overflow-x-auto">
-      <table className="w-full border-separate border-spacing-[3px] text-xs" aria-label="Confusion matrix">
+      <table className="w-full border-separate border-spacing-1 text-xs" aria-label="Confusion matrix">
         <thead>
           <tr>
             <th className="w-24" />
-            <th colSpan={4} className="pb-1 text-center font-mono text-2xs uppercase tracking-wider text-ink-3">Predicted</th>
+            <th colSpan={4} className="pb-1 text-center text-2xs font-medium text-ink-3">Predicted</th>
           </tr>
           <tr>
-            <th className="text-left font-mono text-2xs uppercase tracking-wider text-ink-3">True ↓</th>
+            <th className="text-left text-2xs font-medium text-ink-3">True ↓</th>
             {CLASS_KEYS.map((k) => <th key={k} className="pb-1 text-center font-medium text-ink-2">{CLASS_LABEL[k]}</th>)}
           </tr>
         </thead>
@@ -270,7 +270,7 @@ export function ConfusionMatrix({ matrix, normalize = true }: { matrix: number[]
                     <div className={cx('num text-sm', t > 0.55 ? 'text-white' : 'text-ink')}>
                       {normalize ? (rowSums[i] ? `${(share * 100).toFixed(1)}%` : 'n/a') : int(v)}
                     </div>
-                    <div className={cx('num text-[10px]', t > 0.55 ? 'text-white/75' : 'text-ink-3')}>
+                    <div className={cx('num text-2xs', t > 0.55 ? 'text-white/75' : 'text-ink-3')}>
                       {normalize ? `${int(v)} px` : rowSums[i] ? `${(share * 100).toFixed(1)}%` : ''}
                     </div>
                   </td>
@@ -343,7 +343,7 @@ export function ZoneGrid({ zones }: { zones: TerrainStats['zone_composition'] })
   const rows = ['upper', 'middle', 'lower'];
   const cols = ['left', 'centre', 'right'];
   return (
-    <div className="grid grid-cols-3 gap-[3px] overflow-hidden rounded-lg" role="table" aria-label="Zone composition">
+    <div className="grid grid-cols-3 gap-1 overflow-hidden rounded-lg" role="table" aria-label="Zone composition">
       {rows.flatMap((r) => cols.map((c) => {
         const z = zones[`${r}_${c}`];
         const dom = z?.dominant;
@@ -353,10 +353,10 @@ export function ZoneGrid({ zones }: { zones: TerrainStats['zone_composition'] })
             title={CLASS_KEYS.map((k) => `${CLASS_LABEL[k]} ${z?.percent[k]?.toFixed(1) ?? 0}%`).join(' · ')}>
             {dom && <div className="absolute inset-0" style={{ background: colors[dom], opacity: 0.15 + (share / 100) * 0.55 }} />}
             <div className="relative flex h-full flex-col justify-between">
-              <span className="font-mono text-[9px] uppercase tracking-wider text-ink-3">{r} {c}</span>
+              <span className="text-2xs text-ink-3">{r.charAt(0).toUpperCase() + r.slice(1)} {c}</span>
               <div>
                 <div className="truncate text-xs font-medium text-ink">{dom ? CLASS_LABEL[dom] : '—'}</div>
-                <div className="num text-[11px] text-ink-2">{dom ? `${share.toFixed(0)}%` : 'no pixels'}</div>
+                <div className="num text-2xs text-ink-2">{dom ? `${share.toFixed(0)}%` : 'no pixels'}</div>
               </div>
               <div className="flex h-1 w-full gap-[1px] overflow-hidden rounded-full">
                 {CLASS_KEYS.map((k) => (z?.percent[k] ?? 0) > 0 && (

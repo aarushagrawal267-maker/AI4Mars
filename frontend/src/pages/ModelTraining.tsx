@@ -44,7 +44,7 @@ export default function ModelTraining() {
 
   return (
     <div>
-      <PageHeader eyebrow="04 · learning" title="Model Training"
+      <PageHeader eyebrow="04 · Learning" title="Model Training"
         description="Configure and run real training jobs. Training runs in a separate background process, so this page stays responsive; a checkpoint is saved after every completed epoch and is kept if you stop the run." />
       {defaults.error && <ErrorBanner error={defaults.error} onRetry={defaults.reload} className="mb-4" />}
       {!defaults.data ? (defaults.error ? null : <Loading />) : defaults.data.train_available < 2 ? (
@@ -54,7 +54,7 @@ export default function ModelTraining() {
       ) : (
         <div className="grid gap-6 xl:grid-cols-[400px_minmax(0,1fr)]">
           {IS_DEMO ? (
-            <Panel title="Training needs the full app" icon={BrainCircuit} ticks>
+            <Panel title="Training needs the full app" icon={BrainCircuit}>
               <p className="text-sm leading-relaxed text-ink-2">Training runs on the Python backend with the AI4Mars training images, which are not part of this browser edition. On the right is the most recent real training run from the local platform: its loss curves, validation metrics and full log.</p>
               <p className="mt-3 text-sm text-ink-2">To train your own models, install the app from <a className="text-accent underline" href="https://github.com/aarushagrawal267-maker/AI4Mars" target="_blank" rel="noreferrer">GitHub</a> and run <code className="num">setup.ps1</code>.</p>
             </Panel>
@@ -136,17 +136,17 @@ function ConfigPanel({ defaults, disabled, onStarted }: {
 
   const mc = cfg.model_config as Record<string, unknown>;
   return (
-    <Panel title="Experiment configuration" icon={BrainCircuit} ticks>
+    <Panel title="Experiment configuration" icon={BrainCircuit}>
       <fieldset disabled={disabled} className="space-y-5 disabled:opacity-60">
         <Callout tone="info">{defaults.reason}</Callout>
 
         <div>
-          <div className="mb-1.5 text-xs font-medium text-ink-2">Architecture</div>
+          <div className="mb-2 text-xs font-medium text-ink-2">Architecture</div>
           <div className="grid grid-cols-2 gap-2">
             {(['unet', 'deeplabv3'] as const).map((a) => (
               <button key={a} type="button" onClick={() => setArch(a)} aria-pressed={cfg.arch === a}
                 className={cx('rounded-lg border p-3 text-left transition-colors', cfg.arch === a ? 'border-accent/70 bg-accent/[0.07]' : 'border-line bg-sunken/50 hover:border-line-strong')}>
-                <div className="flex items-center justify-between"><span className="text-sm font-semibold">{ARCH_INFO[a].title}</span>
+                <div className="flex items-center justify-between"><span className="text-sm font-medium">{ARCH_INFO[a].title}</span>
                   <span className={cx('h-3 w-3 rounded-full border-2', cfg.arch === a ? 'border-accent bg-accent' : 'border-line-strong')} /></div>
                 <p className="mt-1 text-2xs leading-snug text-ink-3">{ARCH_INFO[a].blurb}</p>
               </button>
@@ -186,7 +186,7 @@ function ConfigPanel({ defaults, disabled, onStarted }: {
           )}
         </div>
 
-        <div className="space-y-2.5 rounded-lg border border-line bg-sunken/40 p-3">
+        <div className="space-y-3 rounded-lg border border-line bg-sunken/40 p-3">
           <Toggle checked={useSubset} onChange={(v) => { setUseSubset(v); setEstimate(undefined); }} label="Use a subset of the training split"
             description={`${int(defaults.train_available)} training and ${int(defaults.val_available)} validation pairs available`} />
           {useSubset && (
@@ -271,7 +271,7 @@ function ConfigPanel({ defaults, disabled, onStarted }: {
             <label className="flex items-start gap-2 text-xs text-warn"><input type="checkbox" className="mt-0.5" checked={confirmLarge} onChange={(e) => setConfirmLarge(e.target.checked)} />
               I understand this run is estimated to take {duration(estimate.estimated_total_seconds)} and want to start it.</label>
           )}
-          <button type="button" className="btn-primary w-full py-2.5" onClick={start}
+          <button type="button" className="btn-primary w-full py-3" onClick={start}
             disabled={starting || !estimate || !estimate.fits_in_memory || (estimate.large_job && !confirmLarge)} data-testid="start-training">
             <Rocket className="h-4 w-4" /> {starting ? 'Starting…' : 'Start training'}
           </button>
@@ -290,7 +290,7 @@ function EstimateCard({ e }: { e: Estimate }) {
       {e.error ? <p className="text-xs text-bad">{e.error}</p> : (
         <>
           <div className="flex items-baseline justify-between">
-            <span className="eyebrow">estimated duration</span>
+            <span className="eyebrow">Estimated duration</span>
             <span className={cx('num text-xl', e.large_job ? 'text-warn' : 'text-ink')}>{duration(e.estimated_total_seconds)}</span>
           </div>
           <KV className="mt-2 text-xs" items={[
@@ -332,7 +332,7 @@ function Monitor({ status, error }: { status?: TrainingStatus; error?: Error }) 
   }
   return (
     <div className="min-w-0 space-y-6">
-      <Panel ticks title={<span className="flex items-center gap-2">{s.name} <StatusBadge state={s.state} /></span>} eyebrow={s.active ? 'live run' : 'most recent run'} icon={Timer}
+      <Panel title={<span className="flex items-center gap-2">{s.name} <StatusBadge state={s.state} /></span>} eyebrow={s.active ? 'Live run' : 'Most recent run'} icon={Timer}
         actions={s.active ? (
           <>
             {s.state === 'paused'
@@ -366,10 +366,10 @@ function Monitor({ status, error }: { status?: TrainingStatus; error?: Error }) 
       ) : (
         <>
           <div className="grid gap-6 xl:grid-cols-2">
-            <Panel title="Loss" eyebrow="cross-entropy + dice · per epoch"><LossChart history={history} /></Panel>
-            <Panel title="Validation metrics" eyebrow="held-out validation split"><ValMetricChart history={history} /></Panel>
+            <Panel title="Loss" eyebrow="Cross-entropy + dice · per epoch"><LossChart history={history} /></Panel>
+            <Panel title="Validation metrics" eyebrow="Held-out validation split"><ValMetricChart history={history} /></Panel>
           </div>
-          <Panel title="Validation IoU per class" eyebrow="watch big rock — it is rare"><PerClassIouHistory history={history} /></Panel>
+          <Panel title="Validation IoU per class" eyebrow="Watch big rock — it is rare"><PerClassIouHistory history={history} /></Panel>
         </>
       )}
       <LogConsole experimentId={s.experiment_id} live={s.active} />
@@ -387,7 +387,7 @@ function LogConsole({ experimentId, live }: { experimentId: string; live: boolea
   return (
     <Panel title="Training log" icon={Terminal} padded={false}
       actions={<label className="flex items-center gap-1.5 text-2xs text-ink-3"><input type="checkbox" checked={follow} onChange={(e) => setFollow(e.target.checked)} /> follow</label>}>
-      <pre ref={box} className="max-h-72 overflow-auto bg-sunken/70 p-4 font-mono text-[11.5px] leading-relaxed text-ink-2" data-testid="training-log">
+      <pre ref={box} className="max-h-72 overflow-auto bg-sunken/70 p-4 font-mono text-xs leading-relaxed text-ink-2" data-testid="training-log">
         {(logs.data?.lines ?? []).length === 0 ? 'No log output yet.' : logs.data!.lines.map((l, i) => (
           <div key={i} className={cx(l.includes('[best]') && 'text-good', /error|failed|Traceback/i.test(l) && 'text-bad')}>{l}</div>
         ))}

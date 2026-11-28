@@ -40,12 +40,12 @@ ARCH = {"unet": "U-Net", "deeplabv3": "DeepLabV3"}
 MAX_UPLOAD_MB = 20
 MAX_OUTPUT_SIDE = 1024
 
-st.set_page_config(page_title="Mars Terrain Intelligence", page_icon="🪐", layout="wide")
+st.set_page_config(page_title="Mars Terrain Intelligence", page_icon=":material/terrain:", layout="wide")
 st.markdown("""
 <style>
   .block-container {padding-top: 1.6rem; max-width: 1400px;}
   [data-testid="stMetricValue"] {font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 1.55rem;}
-  .mti-eyebrow {font-family: ui-monospace, monospace; font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; color: #E8743B;}
+  .mti-eyebrow {font-size: .78rem; opacity: .7;}
   .mti-swatch {display:inline-block; width:.8rem; height:.8rem; border-radius:3px; margin-right:.35rem; vertical-align:-1px;}
   .mti-note {font-size: .82rem; opacity: .75;}
 </style>
@@ -123,7 +123,7 @@ def run_analysis(rgb: np.ndarray, exp: dict, name: str) -> dict:
 
 def show_analysis(a: dict) -> None:
     res, s, cmap = a["res"], a["stats"], a["res"]["class_map"]
-    st.markdown(f'<span class="mti-eyebrow">analysis · {ARCH[a["model"]["arch"]]}</span>', unsafe_allow_html=True)
+    st.markdown(f'<span class="mti-eyebrow">Analysis · {ARCH[a["model"]["arch"]]}</span>', unsafe_allow_html=True)
     st.subheader(a["name"])
     alpha = st.slider("Overlay opacity", 0.1, 0.9, 0.5, 0.05, key="alpha")
     t1, t2, t3, t4, t5 = st.tabs(["Overlay", "Mask", "Original", "Confidence", "Uncertainty"])
@@ -435,7 +435,7 @@ PAGES = {
 }
 
 with st.sidebar:
-    st.markdown("### 🪐 Mars Terrain Intelligence")
+    st.markdown("### Mars Terrain Intelligence")
     choice = st.radio("Navigate", list(PAGES), label_visibility="collapsed")
     st.caption("Independent student research project. Not affiliated with or endorsed by NASA/JPL.")
 

@@ -6,15 +6,15 @@
    Colours are RGB channel triplets so Tailwind can apply opacity (bg-accent/20). */
 :root,
 :root[data-theme='dark'] {
-  --bg: 9 10 12;
-  --surface: 16 18 21;
-  --raised: 22 25 29;
-  --sunken: 12 13 16;
-  --line: 34 38 44;
-  --line-strong: 50 55 63;
+  --bg: 12 11 10;
+  --surface: 19 18 16;
+  --raised: 26 25 23;
+  --sunken: 15 14 13;
+  --line: 38 36 33;
+  --line-strong: 57 54 50;
   --ink: 233 230 225;
-  --ink-2: 160 165 172;
-  --ink-3: 110 116 124;
+  --ink-2: 166 161 154;
+  --ink-3: 120 115 108;
   --accent: 232 116 59;
   --accent-ink: 20 10 5;
   --good: 70 190 140;
@@ -59,7 +59,6 @@
   }
   body {
     @apply bg-bg font-sans text-ink antialiased;
-    font-feature-settings: 'ss01', 'cv11';
   }
   ::selection {
     background: rgb(var(--accent) / 0.35);
@@ -67,7 +66,10 @@
   h1,
   h2,
   h3 {
-    @apply font-display tracking-tight;
+    @apply font-display;
+  }
+  h1 {
+    @apply tracking-tight;
   }
   :focus-visible {
     outline: 2px solid rgb(var(--accent));
@@ -85,7 +87,7 @@
 }
 
 @layer components {
-  /* Instrument panel: hairline border + corner registration marks. */
+  /* Panel: hairline border. Image panels add camera-frame corner ticks (.panel-ticks) in muted ink. */
   .panel {
     @apply relative rounded-xl border border-line bg-surface shadow-panel;
   }
@@ -96,7 +98,7 @@
     width: 10px;
     height: 10px;
     pointer-events: none;
-    border-color: rgb(var(--accent) / 0.55);
+    border-color: rgb(var(--ink-3) / 0.7);
   }
   .panel-ticks::before {
     top: -1px;
@@ -113,7 +115,7 @@
     border-bottom-right-radius: 12px;
   }
   .eyebrow {
-    @apply font-mono text-2xs uppercase tracking-[0.14em] text-ink-3;
+    @apply text-2xs text-ink-3;
   }
   .num {
     @apply font-mono tabular-nums;
@@ -124,7 +126,7 @@
   }
   .btn {
     @apply inline-flex select-none items-center justify-center gap-2 whitespace-nowrap rounded-lg px-3.5 py-2 text-sm font-medium
-      transition-all duration-150 disabled:cursor-not-allowed disabled:opacity-45;
+      transition-[color,background-color,border-color,filter] duration-150 ease-out disabled:cursor-not-allowed disabled:opacity-45;
   }
   .btn-primary {
     @apply btn bg-accent text-accent-ink hover:brightness-110 active:brightness-95;
@@ -145,7 +147,7 @@
     @apply w-full border-collapse text-sm;
   }
   .table-clean th {
-    @apply border-b border-line px-3 py-2 text-left font-mono text-2xs font-medium uppercase tracking-wider text-ink-3;
+    @apply border-b border-line px-3 py-2 text-left text-2xs font-medium text-ink-3;
   }
   .table-clean td {
     @apply whitespace-nowrap border-b border-line/60 px-3 py-2 align-middle;

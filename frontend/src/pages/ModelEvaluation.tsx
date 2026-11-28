@@ -32,7 +32,7 @@ export default function ModelEvaluation() {
 
   return (
     <div className="space-y-6">
-      <PageHeader eyebrow="05 · measurement" title="Model Evaluation"
+      <PageHeader eyebrow="05 · Measurement" title="Model Evaluation"
         description="Score trained models on genuinely held-out data: the official expert-labelled test set (or the validation split). Metrics are computed at native label resolution from a confusion matrix over labelled pixels only." />
       {models.error && <ErrorBanner error={models.error} onRetry={models.reload} />}
       {!models.data ? <Loading /> : models.data.models.length === 0 ? <NoModels /> : (
@@ -125,7 +125,7 @@ function RunPanel({ models, indexed, onDone }: { models: Parameters<typeof Model
     }
   }
   return (
-    <Panel title="Run an evaluation" icon={Play} ticks>
+    <Panel title="Run an evaluation" icon={Play}>
       {!indexed ? <Callout tone="warn">Load the dataset first: evaluation needs the held-out labelled images.</Callout> : (
         <div className="grid items-end gap-3 md:grid-cols-[2fr_auto_auto_140px_auto]">
           <Field label="Model"><ModelSelect models={models} value={modelId} onChange={setModelId} /></Field>
@@ -144,7 +144,7 @@ function RunPanel({ models, indexed, onDone }: { models: Parameters<typeof Model
         <div className="mt-4 rounded-lg border border-line bg-sunken/60 p-3" aria-live="polite">
           <div className="mb-2 flex items-center justify-between text-xs"><StatusBadge state={job.status} /><span className="num text-ink-2">{Math.round(job.progress * 100)}%</span></div>
           <ProgressBar value={job.progress} tone={job.status === 'failed' ? 'bad' : job.status === 'completed' ? 'good' : 'accent'} />
-          <div className="mt-1.5 text-2xs text-ink-3">{job.error ?? job.message}</div>
+          <div className="mt-2 text-2xs text-ink-3">{job.error ?? job.message}</div>
         </div>
       )}
       {error && <ErrorBanner error={error} className="mt-3" />}
@@ -161,7 +161,7 @@ function EvaluationDetail({ ev }: { ev: Evaluation }) {
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center gap-3">
-        <h2 className="text-lg font-semibold">{ev.experiment_name}</h2>
+        <h2 className="text-lg font-medium">{ev.experiment_name}</h2>
         <span className="chip">{archLabel(ev.arch)}</span>
         <span className="chip">{ev.split}{ev.split === 'test' ? ` · ${ev.label_variant}` : ''} · {ev.images} images</span>
         {ev.is_fixture && <span className="chip text-info">TEST FIXTURE · untrained</span>}
@@ -241,7 +241,7 @@ function Comparison({ evals }: { evals: Evaluation[] }) {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-2"><GitCompare className="h-4 w-4 text-accent" /><h2 className="text-lg font-semibold">Architecture comparison</h2></div>
+      <div className="flex items-center gap-2"><GitCompare className="h-4 w-4 text-ink-3" strokeWidth={1.5} /><h2 className="text-lg font-medium">Architecture comparison</h2></div>
       {!comparable && <Callout tone="warn" title="Not directly comparable">The selected evaluations used different splits, label variants or image counts. Compare models on the same test partition for a fair result.</Callout>}
       <Panel padded={false} title="Side by side" icon={Scale}>
         <div className="overflow-x-auto">
@@ -291,7 +291,7 @@ function Comparison({ evals }: { evals: Evaluation[] }) {
           <GroupedClassBars groups={evals.map((e, i) => ({ id: String(e.id), name: short(e), color: color(e, i),
             values: Object.fromEntries(CLASS_KEYS.map((k) => [k, e.metrics.per_class[k].iou])) as never }))} />
         </Panel>
-        <Panel title="Inference speed" eyebrow="median forward pass, lower is faster">
+        <Panel title="Inference speed" eyebrow="Median forward pass, lower is faster">
           <ResponsiveContainer width="100%" height={60 + evals.length * 34}>
             <BarChart layout="vertical" data={evals.map((e, i) => ({ name: short(e), v: e.metrics.inference.forward_ms_median, c: color(e, i) }))} margin={{ left: 8, right: 64 }}>
               <XAxis type="number" hide />
@@ -308,7 +308,7 @@ function Comparison({ evals }: { evals: Evaluation[] }) {
           <MultiCurve series={curves} metric="val_mean_iou" percent height={220} />
         </Panel>
       </div>
-      <Panel title="Training loss curves" eyebrow="train loss (one axis, same loss definition only if configs match)">
+      <Panel title="Training loss curves" eyebrow="Train loss (one axis, same loss definition only if configs match)">
         <MultiCurve series={curves} metric="train_loss" height={220} />
       </Panel>
     </div>

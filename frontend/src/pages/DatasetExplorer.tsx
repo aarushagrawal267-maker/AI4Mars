@@ -36,7 +36,7 @@ export default function DatasetExplorer() {
 
   return (
     <div className="space-y-6">
-      <PageHeader eyebrow="03 · data" title="Dataset Explorer"
+      <PageHeader eyebrow="03 · Data" title="Dataset Explorer"
         description="NASA JPL's AI4Mars dataset (Curiosity NavCam subset). Every count, percentage and validation result on this page is computed from the files on disk; nothing is estimated." />
       {status.error && <ErrorBanner error={status.error} onRetry={status.reload} />}
       {!status.data ? (status.error ? null : <Loading />) : (
@@ -135,7 +135,7 @@ function Acquisition({ onChanged }: { onChanged: () => void }) {
 
   return (
     <div className="grid gap-6 xl:grid-cols-[1fr_1.2fr]">
-      <Panel title="Data source" icon={Database} ticks>
+      <Panel title="Data source" icon={Database}>
         <KV items={[
           ['Dataset', <a key="d" className="inline-flex items-center gap-1 text-ink hover:text-accent" href={s.source.record_url} target="_blank" rel="noreferrer">AI4Mars merged v0.6 <ExternalLink className="h-3 w-3" /></a>],
           ['DOI', s.source.doi],
@@ -200,7 +200,7 @@ function Acquisition({ onChanged }: { onChanged: () => void }) {
                 <span className="num text-ink-2">{Math.round(job.progress * 100)}%</span>
               </div>
               <ProgressBar value={job.progress} tone={job.status === 'failed' ? 'bad' : job.status === 'completed' ? 'good' : 'accent'} />
-              <div className="mt-1.5 truncate text-2xs text-ink-3">{job.error ?? job.message}</div>
+              <div className="mt-2 truncate text-2xs text-ink-3">{job.error ?? job.message}</div>
             </div>
           )}
           {error && <ErrorBanner error={error} />}
@@ -231,7 +231,7 @@ function StatsSection({ stats }: { stats: DatasetStatistics }) {
         <Stat label="Big rock (train)" value={pct(st.splits.train.class_percent_of_labeled.big_rock, 2)} sub="of labelled pixels" tone="bad" />
       </div>
       <div className="grid gap-6 xl:grid-cols-[1.1fr_1fr]">
-        <Panel title="Class distribution" eyebrow="share of labelled pixels" icon={Layers}
+        <Panel title="Class distribution" eyebrow="Share of labelled pixels" icon={Layers}
           actions={<Segmented size="sm" value={split} onChange={setSplit} options={Object.keys(splitData).map((k) => ({ value: k, label: k }))} />}>
           <ClassBars percent={current.class_percent_of_labeled as Record<ClassKey, number>} height={190} valueDigits={2} />
           <div className="mt-3 grid grid-cols-2 gap-x-6 gap-y-1 text-xs sm:grid-cols-4">
@@ -240,7 +240,7 @@ function StatsSection({ stats }: { stats: DatasetStatistics }) {
             ))}
           </div>
         </Panel>
-        <Panel title="Splits at a glance" eyebrow="labelled-pixel composition" icon={Layers}>
+        <Panel title="Splits at a glance" eyebrow="Labelled-pixel composition" icon={Layers}>
           <div className="space-y-3">
             {Object.entries(splitData).map(([name, s]) => s && (
               <div key={name}>
@@ -321,7 +321,7 @@ function ValidationSection({ report }: { report: ValidationReport }) {
         ))}
       </ul>
       <div className="mt-4 grid grid-cols-3 gap-2 text-center">
-        {[['images found', v.images_found], ['train labels', v.train_labels_found], ['valid pairs', v.valid_pairs]].map(([k, n]) => (
+        {[['Images found', v.images_found], ['Train labels', v.train_labels_found], ['Valid pairs', v.valid_pairs]].map(([k, n]) => (
           <div key={k as string} className="rounded-lg border border-line bg-sunken/60 py-2"><div className="num text-lg">{int(n as number)}</div><div className="eyebrow">{k}</div></div>
         ))}
       </div>
@@ -372,12 +372,12 @@ function Gallery({ testVariants }: { testVariants: string[] }) {
           return (
             <button key={s.id} onClick={() => setOpen(s)} className="group overflow-hidden rounded-lg border border-line bg-sunken text-left transition-colors hover:border-accent/60">
               <div className="relative aspect-square overflow-hidden">
-                <img src={api.sampleImageUrl(s.id, view, view === 'image' ? undefined : variant, 320)} alt={s.id} loading="lazy" className={cx('h-full w-full object-cover transition-transform duration-500 group-hover:scale-105', view === 'label' && 'pixelated')} />
-                <span className="absolute left-1.5 top-1.5 rounded bg-black/60 px-1 font-mono text-[9px] text-white">{s.split}{s.split === 'test' ? ` · ${variant}` : ''}</span>
+                <img src={api.sampleImageUrl(s.id, view, view === 'image' ? undefined : variant, 320)} alt={s.id} loading="lazy" className={cx('h-full w-full object-cover', view === 'label' && 'pixelated')} />
+                <span className="absolute left-1.5 top-1.5 rounded bg-black/60 px-1 font-mono text-2xs text-white">{s.split}{s.split === 'test' ? ` · ${variant}` : ''}</span>
               </div>
               <div className="p-2">
-                <div className="truncate font-mono text-[10px] text-ink-3">{s.id}</div>
-                {lab && <CompositionBar percent={lab.class_percent} height={4} className="mt-1.5" />}
+                <div className="truncate font-mono text-2xs text-ink-3">{s.id}</div>
+                {lab && <CompositionBar percent={lab.class_percent} height={4} className="mt-2" />}
               </div>
             </button>
           );
@@ -423,13 +423,13 @@ function SampleModal({ sample, onClose }: { sample: Sample; onClose: () => void 
         {(['image', 'label', 'overlay'] as const).map((k) => (
           <figure key={k}>
             <img src={api.sampleImageUrl(sample.id, k, k === 'image' ? undefined : variant, 768, colorVersion)} alt={`${k}`} className={cx('w-full rounded-md border border-line', k === 'label' && 'pixelated')} />
-            <figcaption className="eyebrow mt-1.5">{k === 'image' ? 'original' : k === 'label' ? `ground truth (${variant})` : 'ground-truth overlay'}</figcaption>
+            <figcaption className="eyebrow mt-2">{k === 'image' ? 'Original' : k === 'label' ? `Ground truth (${variant})` : 'Ground-truth overlay'}</figcaption>
           </figure>
         ))}
         {pred && (
           <figure>
             <img src={api.analysisImageUrl(pred.id, 'mask', { v: colorVersion })} alt="Prediction" className="w-full rounded-md border border-accent/50" />
-            <figcaption className="eyebrow mt-1.5 text-accent">prediction · {pred.model_name}</figcaption>
+            <figcaption className="eyebrow mt-2 text-ink-2">Prediction · {pred.model_name}</figcaption>
           </figure>
         )}
       </div>
@@ -437,15 +437,15 @@ function SampleModal({ sample, onClose }: { sample: Sample; onClose: () => void 
       {lab && (
         <div className="mt-3 grid gap-4 md:grid-cols-2">
           <div>
-            <div className="eyebrow mb-1.5">ground-truth composition ({variant}) · {pct(lab.unlabeled_percent)} unlabelled</div>
+            <div className="eyebrow mb-2">Ground-truth composition ({variant}) · {pct(lab.unlabeled_percent)} unlabelled</div>
             <CompositionBar percent={lab.class_percent} height={10} />
-            <div className="num mt-1.5 flex flex-wrap gap-x-3 text-2xs text-ink-2">{CLASS_KEYS.map((k) => <span key={k}>{CLASS_LABEL[k]} {pct(lab.class_percent[k])}</span>)}</div>
+            <div className="num mt-2 flex flex-wrap gap-x-3 text-2xs text-ink-2">{CLASS_KEYS.map((k) => <span key={k}>{CLASS_LABEL[k]} {pct(lab.class_percent[k])}</span>)}</div>
           </div>
           {pred && (
             <div>
-              <div className="eyebrow mb-1.5">predicted composition (all pixels, including those unlabelled in ground truth)</div>
+              <div className="eyebrow mb-2">Predicted composition (all pixels, including those unlabelled in ground truth)</div>
               <CompositionBar percent={pred.class_percent} height={10} />
-              <div className="num mt-1.5 flex flex-wrap gap-x-3 text-2xs text-ink-2">{CLASS_KEYS.map((k) => <span key={k}>{CLASS_LABEL[k]} {pct(pred.class_percent[k])}</span>)}</div>
+              <div className="num mt-2 flex flex-wrap gap-x-3 text-2xs text-ink-2">{CLASS_KEYS.map((k) => <span key={k}>{CLASS_LABEL[k]} {pct(pred.class_percent[k])}</span>)}</div>
             </div>
           )}
         </div>

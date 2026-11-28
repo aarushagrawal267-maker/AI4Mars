@@ -15,9 +15,9 @@ export function PageHeader({ eyebrow, title, description, actions }: {
   return (
     <header className="mb-6 flex flex-wrap items-end justify-between gap-4 animate-fade-in">
       <div className="min-w-0">
-        {eyebrow && <div className="eyebrow mb-1.5 text-accent/90">{eyebrow}</div>}
-        <h1 className="text-[1.65rem] font-semibold leading-tight text-ink">{title}</h1>
-        {description && <p className="mt-1.5 max-w-3xl text-sm leading-relaxed text-ink-2">{description}</p>}
+        {eyebrow && <div className="eyebrow num mb-2">{eyebrow}</div>}
+        <h1 className="text-2xl font-medium leading-tight text-ink">{title}</h1>
+        {description && <p className="mt-2 max-w-3xl text-sm leading-relaxed text-ink-2">{description}</p>}
       </div>
       {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
     </header>
@@ -40,11 +40,11 @@ export function Panel({ title, eyebrow, icon: Icon, actions, children, className
     <section id={id} className={cx('panel animate-fade-in', ticks && 'panel-ticks', className)}>
       {(title || actions || eyebrow) && (
         <div className="flex items-center justify-between gap-3 border-b border-line/70 px-4 py-3">
-          <div className="flex min-w-0 items-center gap-2.5">
-            {Icon && <Icon className="h-4 w-4 shrink-0 text-accent" strokeWidth={1.75} />}
+          <div className="flex min-w-0 items-center gap-2">
+            {Icon && <Icon className="h-4 w-4 shrink-0 text-ink-3" strokeWidth={1.5} />}
             <div className="min-w-0">
-              {eyebrow && <div className="eyebrow leading-none">{eyebrow}</div>}
-              {title && <h2 className="truncate text-sm font-semibold text-ink">{title}</h2>}
+              {eyebrow && <div className="eyebrow mb-0.5 leading-none">{eyebrow}</div>}
+              {title && <h2 className="truncate text-sm font-medium text-ink">{title}</h2>}
             </div>
           </div>
           {actions && <div className="flex shrink-0 items-center gap-1.5">{actions}</div>}
@@ -76,13 +76,13 @@ export function Stat({ label, value, sub, tone = 'default', icon: Icon, classNam
   className?: string;
 }) {
   return (
-    <div className={cx('panel px-4 py-3.5', className)}>
+    <div className={cx('panel px-4 py-4', className)}>
       <div className="flex items-center justify-between gap-2">
         <span className="eyebrow">{label}</span>
-        {Icon && <Icon className="h-3.5 w-3.5 text-ink-3" strokeWidth={1.75} />}
+        {Icon && <Icon className="h-4 w-4 text-ink-3" strokeWidth={1.5} />}
       </div>
-      <div className={cx('num mt-1.5 truncate text-2xl font-medium leading-none', toneText[tone])}>{value}</div>
-      {sub && <div className="mt-1.5 truncate text-xs text-ink-3">{sub}</div>}
+      <div className={cx('num mt-2 truncate text-2xl font-medium leading-none', toneText[tone])}>{value}</div>
+      {sub && <div className="mt-2 truncate text-xs text-ink-3">{sub}</div>}
     </div>
   );
 }
@@ -122,7 +122,7 @@ export function StatusBadge({ state, label }: { state: string; label?: string })
   const tone = STATE_TONE[state] ?? 'default';
   const dot: Record<Tone, string> = {
     default: 'bg-ink-3',
-    accent: 'bg-accent animate-pulse2',
+    accent: 'bg-accent',
     good: 'bg-good',
     warn: 'bg-warn',
     bad: 'bg-bad',
@@ -151,7 +151,7 @@ export function Callout({ tone = 'info', title, children, className, icon }: {
     good: 'border-good/30 bg-good/[0.07] text-good',
   }[tone];
   return (
-    <div className={cx('flex gap-3 rounded-lg border px-3.5 py-3 text-sm', styles, className)} role="note">
+    <div className={cx('flex gap-3 rounded-lg border px-4 py-3 text-sm', styles, className)} role="note">
       <Icon className="mt-0.5 h-4 w-4 shrink-0" strokeWidth={1.9} />
       <div className="min-w-0 text-ink-2">
         {title && <div className="mb-0.5 font-medium text-ink">{title}</div>}
@@ -165,7 +165,7 @@ export function ErrorBanner({ error, onRetry, className }: { error: Error | stri
   if (!error) return null;
   const message = typeof error === 'string' ? error : error.message;
   return (
-    <div role="alert" className={cx('flex items-start gap-3 rounded-lg border border-bad/35 bg-bad/[0.08] px-3.5 py-3 text-sm', className)}>
+    <div role="alert" className={cx('flex items-start gap-3 rounded-lg border border-bad/35 bg-bad/[0.08] px-4 py-3 text-sm', className)}>
       <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-bad" />
       <div className="min-w-0 flex-1 break-words text-ink-2">{message}</div>
       {onRetry && (
@@ -185,12 +185,12 @@ export function EmptyState({ icon: Icon, title, children, action, className }: {
   className?: string;
 }) {
   return (
-    <div className={cx('flex flex-col items-center justify-center rounded-xl border border-dashed border-line-strong/70 bg-grid px-6 py-12 text-center', className)}>
+    <div className={cx('flex flex-col items-center justify-center rounded-xl border border-dashed border-line-strong/70 px-6 py-12 text-center', className)}>
       <div className="mb-4 grid h-12 w-12 place-items-center rounded-xl border border-line bg-raised">
-        <Icon className="h-5 w-5 text-accent" strokeWidth={1.6} />
+        <Icon className="h-5 w-5 text-ink-3" strokeWidth={1.5} />
       </div>
-      <h3 className="text-base font-semibold text-ink">{title}</h3>
-      {children && <div className="mt-1.5 max-w-md text-sm leading-relaxed text-ink-2">{children}</div>}
+      <h3 className="text-base font-medium text-ink">{title}</h3>
+      {children && <div className="mt-2 max-w-md text-sm leading-relaxed text-ink-2">{children}</div>}
       {action && <div className="mt-5 flex flex-wrap justify-center gap-2">{action}</div>}
     </div>
   );
@@ -202,7 +202,7 @@ export function Spinner({ className }: { className?: string }) {
 
 export function Loading({ label = 'Loading…' }: { label?: string }) {
   return (
-    <div className="flex items-center gap-2.5 py-10 text-sm text-ink-3 justify-center">
+    <div className="flex items-center gap-2 py-10 text-sm text-ink-3 justify-center">
       <Spinner /> {label}
     </div>
   );
@@ -219,7 +219,7 @@ export function ProgressBar({ value, tone = 'accent', className, label }: {
   return (
     <div className={cx('h-1.5 w-full overflow-hidden rounded-full bg-sunken ring-1 ring-inset ring-line', className)}
       role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(v * 100)} aria-label={label}>
-      <div className={cx('h-full rounded-full transition-[width] duration-500 ease-out', bar)} style={{ width: `${v * 100}%` }} />
+      <div className={cx('h-full origin-left rounded-full transition-transform duration-500 ease-out', bar)} style={{ transform: `scaleX(${v})` }} />
     </div>
   );
 }
@@ -235,7 +235,7 @@ export function Field({ label, hint, children, className, htmlFor }: {
 }) {
   return (
     <div className={cx('min-w-0', className)}>
-      <label htmlFor={htmlFor} className="mb-1.5 block text-xs font-medium text-ink-2">{label}</label>
+      <label htmlFor={htmlFor} className="mb-2 block text-xs font-medium text-ink-2">{label}</label>
       {children}
       {hint && <div className="mt-1 text-2xs leading-snug text-ink-3">{hint}</div>}
     </div>
@@ -279,7 +279,7 @@ export function Toggle({ checked, onChange, label, description, disabled }: {
       <button type="button" role="switch" aria-checked={checked} disabled={disabled} onClick={() => onChange(!checked)}
         className={cx('relative mt-0.5 h-5 w-9 shrink-0 rounded-full border transition-colors',
           checked ? 'border-accent bg-accent' : 'border-line-strong bg-sunken')}>
-        <span className={cx('absolute top-0.5 h-3.5 w-3.5 rounded-full bg-white shadow transition-all', checked ? 'left-[18px]' : 'left-0.5')} />
+        <span className={cx('absolute left-0.5 top-0.5 h-3.5 w-3.5 rounded-full bg-white shadow transition-transform duration-150 ease-out', checked && 'translate-x-4')} />
       </button>
       <span className="min-w-0">
         <span className="block text-sm text-ink">{label}</span>
@@ -305,10 +305,10 @@ export function Modal({ open, onClose, title, children, wide }: {
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-50 grid place-items-center bg-black/60 p-4 backdrop-blur-sm animate-fade-in" onMouseDown={onClose}>
-      <div role="dialog" aria-modal="true" className={cx('panel panel-ticks max-h-[92vh] w-full overflow-auto', wide ? 'max-w-6xl' : 'max-w-lg')}
+      <div role="dialog" aria-modal="true" className={cx('panel max-h-[92vh] w-full overflow-auto', wide ? 'max-w-6xl' : 'max-w-lg')}
         onMouseDown={(e) => e.stopPropagation()}>
         <div className="sticky top-0 z-10 flex items-center justify-between border-b border-line bg-surface/95 px-4 py-3 backdrop-blur">
-          <h2 className="truncate text-sm font-semibold">{title}</h2>
+          <h2 className="truncate text-sm font-medium">{title}</h2>
           <button className="btn-ghost p-1.5" onClick={onClose} aria-label="Close"><X className="h-4 w-4" /></button>
         </div>
         <div className="p-4">{children}</div>
@@ -370,7 +370,7 @@ export function CompositionBar({ percent, height = 10, className }: {
 export function FixtureBadge() {
   return (
     <span className="chip border-info/40 bg-info/10 text-info" title="Untrained deterministic fixture used for automated tests. Not a real prediction.">
-      TEST FIXTURE · not a real prediction
+      Test fixture · not a real prediction
     </span>
   );
 }

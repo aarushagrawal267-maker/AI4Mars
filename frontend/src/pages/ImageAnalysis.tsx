@@ -111,14 +111,14 @@ export default function ImageAnalysis() {
 
   return (
     <div>
-      <PageHeader eyebrow="02 · inference" title="Image Analysis"
+      <PageHeader eyebrow="02 · Inference" title="Image Analysis"
         description="Upload a Mars rover photograph and segment every pixel into soil, bedrock, sand or big rock with a model you trained locally. Confidence is the model's own softmax score: it is not calibrated, and a confident prediction can still be wrong." />
 
       {models.error && <ErrorBanner error={models.error} onRetry={models.reload} className="mb-4" />}
       {models.loading && !models.data ? <Loading /> : list.length === 0 ? <NoModels /> : (
         <div className="grid gap-6 xl:grid-cols-[380px_1fr]">
           <div className="space-y-4">
-            <Panel title="Input" icon={ImageIcon} ticks>
+            <Panel title="Input" icon={ImageIcon}>
               <div className="space-y-4">
                 <Field label="Model" htmlFor="model">
                   <ModelSelect id="model" models={list} value={modelId} onChange={setModelId} />
@@ -156,7 +156,7 @@ export default function ImageAnalysis() {
                     </div>
                   </div>
                 )}
-                <button className="btn-primary w-full py-2.5" disabled={!canRun} onClick={run} data-testid="run-analysis">
+                <button className="btn-primary w-full py-3" disabled={!canRun} onClick={run} data-testid="run-analysis">
                   {running ? <><span className="h-4 w-4 animate-spin rounded-full border-2 border-accent-ink/30 border-t-accent-ink" /> {progress || 'Running inference…'}</> : <><Play className="h-4 w-4" /> Run analysis</>}
                 </button>
                 {runError && <ErrorBanner error={runError} />}
@@ -187,17 +187,17 @@ export default function ImageAnalysis() {
               </div>
             )}
             {!result && !running && (
-              <div className="panel grid min-h-[420px] place-items-center bg-grid p-8 text-center">
+              <div className="panel grid min-h-[420px] place-items-center p-8 text-center">
                 <div>
-                  <ScanSearch className="mx-auto h-10 w-10 text-ink-3" strokeWidth={1.3} />
-                  <h3 className="mt-4 text-base font-semibold">Results appear here</h3>
+                  <ScanSearch className="mx-auto h-10 w-10 text-ink-3" strokeWidth={1.5} />
+                  <h3 className="mt-4 text-base font-medium">Results appear here</h3>
                   <p className="mt-1 max-w-sm text-sm text-ink-3">Choose an image and a model, then run the analysis. You will get the mask, an overlay, a swipe comparison, confidence and uncertainty maps, and terrain statistics.</p>
                 </div>
               </div>
             )}
             {result && (
               <>
-                <Panel title={result.filename} eyebrow={`analysis ${result.id}`} icon={ScanSearch} ticks
+                <Panel title={result.filename} eyebrow={`Analysis ${result.id}`} icon={ScanSearch} ticks
                   actions={<>
                     <Link to={`/terrain?id=${result.id}`} className="btn-ghost text-xs"><Mountain className="h-3.5 w-3.5" /> Terrain detail</Link>
                     <Link to={`/navigation?id=${result.id}`} className="btn-ghost text-xs"><Map className="h-3.5 w-3.5" /> Plan route</Link>
@@ -205,10 +205,10 @@ export default function ImageAnalysis() {
                   <SegmentationViewer analysis={result} />
                 </Panel>
                 <div className="grid gap-6 2xl:grid-cols-[1.3fr_1fr]">
-                  <Panel title="Terrain distribution" eyebrow="computed from this prediction">
+                  <Panel title="Terrain distribution" eyebrow="Computed from this prediction">
                     <TerrainSummary analysis={result} />
                   </Panel>
-                  <Panel title="Prediction confidence" eyebrow="softmax · uncalibrated">
+                  <Panel title="Prediction confidence" eyebrow="Softmax · uncalibrated">
                     {result.stats.confidence && <ConfidenceHistogram histogram={result.stats.confidence.histogram} />}
                     <p className="mt-3 text-xs leading-relaxed text-ink-3">
                       Share of pixels by the probability the model gave its chosen class. With four classes the minimum is 25%.

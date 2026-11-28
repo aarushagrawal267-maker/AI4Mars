@@ -155,8 +155,8 @@ export default function SegmentationViewer({ analysis, defaultMode = 'overlay', 
                   <SplitSquareHorizontal className="h-4 w-4" />
                 </div>
               </div>
-              <span className="absolute left-2 top-2 rounded bg-black/60 px-1.5 py-0.5 font-mono text-[10px] text-white">ORIGINAL</span>
-              <span className="absolute right-2 top-2 rounded bg-black/60 px-1.5 py-0.5 font-mono text-[10px] text-white">PREDICTION</span>
+              <span className="absolute left-2 top-2 rounded bg-black/60 px-1.5 py-0.5 font-mono text-2xs text-white">ORIGINAL</span>
+              <span className="absolute right-2 top-2 rounded bg-black/60 px-1.5 py-0.5 font-mono text-2xs text-white">PREDICTION</span>
             </>
           ) : (
             <img src={src[mode]} alt={`${mode} view`} className={cx('h-full w-full object-fill', mode === 'mask' && 'pixelated')} draggable={false} />
@@ -165,14 +165,14 @@ export default function SegmentationViewer({ analysis, defaultMode = 'overlay', 
             <>
               <div className="pointer-events-none absolute h-5 w-5 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/90 shadow"
                 style={{ left: probe.x, top: probe.y }} />
-              <div className="pointer-events-none absolute z-10 min-w-[150px] rounded-lg border border-white/15 bg-black/80 px-2.5 py-2 text-xs text-white shadow-xl backdrop-blur"
+              <div className="pointer-events-none absolute z-10 min-w-[150px] rounded-lg border border-white/15 bg-black/80 px-3 py-2 text-xs text-white shadow-xl backdrop-blur"
                 style={{ left: Math.min(probe.x + 14, (frame.current?.clientWidth ?? 0) - 170), top: Math.max(4, probe.y - 70) }}>
-                <div className="font-mono text-[10px] text-white/60">px ({probe.px}, {probe.py})</div>
+                <div className="font-mono text-2xs text-white/60">px ({probe.px}, {probe.py})</div>
                 <div className="mt-1 flex items-center gap-1.5 font-medium">
                   {probe.cls && <span className="h-2.5 w-2.5 rounded-sm" style={{ background: colors[probe.cls] }} />}
                   {probe.cls ? CLASS_LABEL[probe.cls] : ids ? 'n/a' : 'loading…'}
                 </div>
-                <div className="mt-0.5 font-mono text-[11px] text-white/80">
+                <div className="mt-0.5 font-mono text-2xs text-white/80">
                   confidence {probe.conf !== null ? `${(probe.conf * 100).toFixed(1)}%` : '…'}
                 </div>
               </div>
@@ -207,7 +207,7 @@ export default function SegmentationViewer({ analysis, defaultMode = 'overlay', 
         </div>
       </div>
 
-      <Modal open={zoom} onClose={() => setZoom(false)} title={<span className="flex items-center gap-2"><Columns2 className="h-4 w-4 text-accent" /> {analysis.filename}</span>} wide>
+      <Modal open={zoom} onClose={() => setZoom(false)} title={<span className="flex items-center gap-2"><Columns2 className="h-4 w-4 text-ink-3" strokeWidth={1.5} /> {analysis.filename}</span>} wide>
         <img src={src.side_by_side} alt="Original, mask and overlay" className="w-full rounded-md" />
         <ClassLegend className="mt-3" />
       </Modal>
